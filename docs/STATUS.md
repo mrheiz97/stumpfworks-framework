@@ -42,8 +42,17 @@ used on Windows for the local Identity rehearsals below.
 - Go 1.26.8 is now enforced. With matching build/scanner toolchains, scans report
   no reachable or imported-package findings; one unused OpenPGP module advisory
   remains. This is not a blanket vulnerability-free dependency claim.
-- New work is locally tested. Fresh GitHub CI/race evidence is still pending;
-  Windows has CGO disabled and no local GCC for race testing.
+- Framework PR #32 passed fresh GitHub CI on 2026-09-18, including Linux race
+  detection and PostgreSQL integration. Windows has CGO disabled and no local
+  GCC for race testing. Identity's separate CI changes are still local.
+
+## Identity bridge preparation, 2026-09-18
+
+Identity now has an inactive bridge from its read-only user lookups to a pinned
+framework LDAPS revision. Authentication, admin policy and listing remain
+consumer-owned. Its local full test suite, vet, module verification and repeated
+synthetic PostgreSQL/OIDC/TLS-LDAP contracts pass. No production adapter switch,
+live LDAP acceptance or database migration occurred.
 
 ## OIDC client progress on 2026-09-13
 

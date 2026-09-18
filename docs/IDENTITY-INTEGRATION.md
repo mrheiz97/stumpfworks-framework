@@ -132,3 +132,12 @@ production migration or full native badge/PKINIT acceptance has occurred.
 Go 1.26.8 is enforced after checking a build/scanner mismatch; scans with that
 toolchain report no reachable/imported-package findings, with one unused OpenPGP
 module advisory remaining. Full unit tests and vet pass locally.
+
+On 2026-09-18 framework PR #32 passed fresh GitHub CI, including Linux race and
+PostgreSQL checks. Identity pinned that framework revision and added an inactive
+LDAP lookup bridge. Its same-configuration builder refuses legacy SAN-bypass
+pinning and invalid/oversized CA files. Synthetic trusted-TLS LDAP tests cover
+projection, missing/ambiguous users and rejected untrusted certificates. Full
+Identity tests, vet and module verification pass locally; ten shuffled directory,
+database and OIDC repetitions pass. These are not live directory acceptance.
+Identity's PostgreSQL/race/backup CI workflow is prepared but not yet run there.
