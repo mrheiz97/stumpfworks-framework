@@ -25,8 +25,25 @@ request decoding, and the audit foundation.
   rollback.
 - The Linux build and current pinned `govulncheck` scan passed.
 
-The local Docker daemon remains unavailable, so PostgreSQL integration is
-verified in CI rather than on the Windows workstation.
+The initial PostgreSQL integration was CI-only because the local Docker daemon
+was unavailable. A disposable native PostgreSQL 17 cluster was subsequently
+used on Windows for the local Identity rehearsals below.
+
+## Local integration preparation, 2026-09-17
+
+- Read-only AD/Samba-AD LDAPS prototype: verified TLS, deadlines, no referrals,
+  escaped filters, 1 MiB wire budget, 16-message cap, 32 nesting levels and 4096
+  BER nodes per message. Config/reader formatting and JSON logging are redacted.
+  Unit/protocol tests pass; a 20-second fuzz run tested about 345,000 inputs.
+- Identity has an inactive PostgreSQL adapter, bounded all-table importer,
+  shared backend contracts, atomic badge-plus-audit operation, pg_dump/restore
+  probe and real OIDC-handler/framework-client contract over trusted local TLS.
+  See `IDENTITY-INTEGRATION.md`. No production cutover or live LDAP acceptance.
+- Go 1.26.8 is now enforced. With matching build/scanner toolchains, scans report
+  no reachable or imported-package findings; one unused OpenPGP module advisory
+  remains. This is not a blanket vulnerability-free dependency claim.
+- New work is locally tested. Fresh GitHub CI/race evidence is still pending;
+  Windows has CGO disabled and no local GCC for race testing.
 
 ## OIDC client progress on 2026-09-13
 

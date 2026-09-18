@@ -45,6 +45,12 @@ real consumers validate the design.
 - [ ] Deploy and verify Access ntfy alert delivery (notifier prepared locally)
 - [ ] Live issuer-outage acceptance (no planned production shutdown)
 
+## Next integration — Identity directory and PostgreSQL
+
+Identity directory and PostgreSQL migration preparation is tracked in
+`IDENTITY-INTEGRATION.md`. A read-only LDAPS lookup prototype is local work,
+not yet consumer-integrated or accepted against Samba AD.
+
 ## Future candidate — optional AI integration
 
 When a real application needs AI, evaluate a small provider-neutral text

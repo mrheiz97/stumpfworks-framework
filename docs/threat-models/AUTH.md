@@ -55,10 +55,11 @@ minimal claims, **not** an application user or permissions. State, nonce, PKCE,
 session storage, account linking and local authorization have clear interfaces
 owned by the consumer; they must not be hidden behind a global singleton.
 
-The Go module path now follows the private repository (ADR 0009). Before
+The Go module path follows the repository (ADR 0009). Before
 importing SWF into Identity or Access, confirm the supported Go baseline.
-Identity currently uses Go 1.24 while SWF uses Go 1.26; an integration must not
-silently force an application upgrade. Identity
+The staged Identity integration and SWF now require Go 1.26.8; compatibility
+and patch-security reasons are recorded in Identity's migration preparation and
+ADR 0007. Production upgrades remain separate from local preparation. Identity
 currently persists to SQLite and Access to PostgreSQL. Neither database is
 migrated merely to consume the OIDC client.
 

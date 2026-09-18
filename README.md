@@ -10,7 +10,7 @@ module.
 
 ## Quick start
 
-Requirements: Go 1.26 or newer. Older toolchains contain known vulnerabilities
+Requirements: Go 1.26.8 or a newer patched release. Older toolchains contain known vulnerabilities
 in standard-library paths used by SWF.
 
 ```bash
