@@ -77,6 +77,8 @@ default store for detailed application logs.
 
 The framework already provides JSON logging, opt-in HTTP request metrics, and an
 importable Grafana starter dashboard for service, HTTP, and directory health.
+Versioned Prometheus starter rules cover sustained service, HTTP, and directory
+failures; delivery remains deployment-owned.
 The staged LDAPS reader now also exposes bounded lookup outcomes, protocol stage
 and duration;
 the metrics registry exports them as Prometheus counters and histograms without

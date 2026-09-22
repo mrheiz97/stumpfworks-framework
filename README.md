@@ -64,6 +64,8 @@ The current acceptance evidence and remaining release gates are tracked in
 [`docs/STATUS.md`](docs/STATUS.md).
 An importable, privacy-safe starter dashboard is available at
 [`observability/grafana/stumpfworks-overview.json`](observability/grafana/stumpfworks-overview.json).
+Starter Prometheus alert rules live in
+[`observability/prometheus`](observability/prometheus).
 
 ## Status
 
