@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	frameworkldap "github.com/TheRealHZL/stumpfworks-framework/directory/ldap"
 )
 
 var buckets = [...]float64{0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10}
@@ -28,12 +30,70 @@ type observation struct {
 // Registry owns one application's HTTP metrics. Do not register its Handler on
 // a public listener without authentication or network-level access control.
 type Registry struct {
-	mu   sync.Mutex
-	data map[key]observation
+	mu        sync.Mutex
+	data      map[key]observation
+	directory map[directoryKey]observation
+}
+
+type directoryKey struct {
+	outcome frameworkldap.LookupOutcome
+	stage   frameworkldap.LookupStage
 }
 
 // New creates an empty, application-scoped registry.
-func New() *Registry { return &Registry{data: make(map[key]observation)} }
+func New() *Registry {
+	return &Registry{data: make(map[key]observation), directory: make(map[directoryKey]observation)}
+}
+
+type ldapObserver struct{ registry *Registry }
+
+// LDAPObserver connects the directory reader to this registry without adding
+// user-controlled or identity-bearing labels.
+func (registry *Registry) LDAPObserver() frameworkldap.Observer {
+	return ldapObserver{registry: registry}
+}
+
+func (observer ldapObserver) ObserveLDAPLookup(item frameworkldap.LookupObservation) {
+	outcome := boundedLDAPOutcome(item.Outcome)
+	stage := boundedLDAPStage(item.Stage)
+	seconds := item.Duration.Seconds()
+	if seconds < 0 {
+		seconds = 0
+	}
+	observer.registry.mu.Lock()
+	defer observer.registry.mu.Unlock()
+	label := directoryKey{outcome: outcome, stage: stage}
+	value := observer.registry.directory[label]
+	value.count++
+	value.sum += seconds
+	for index, upper := range buckets {
+		if seconds <= upper {
+			value.buckets[index]++
+		}
+	}
+	observer.registry.directory[label] = value
+}
+
+func boundedLDAPStage(stage frameworkldap.LookupStage) frameworkldap.LookupStage {
+	switch stage {
+	case frameworkldap.StageValidation, frameworkldap.StageConnect, frameworkldap.StageBind,
+		frameworkldap.StageSearch, frameworkldap.StageResult:
+		return stage
+	default:
+		return frameworkldap.StageResult
+	}
+}
+
+func boundedLDAPOutcome(outcome frameworkldap.LookupOutcome) frameworkldap.LookupOutcome {
+	switch outcome {
+	case frameworkldap.OutcomeSuccess, frameworkldap.OutcomeNotFound, frameworkldap.OutcomeAmbiguous,
+		frameworkldap.OutcomeCanceled, frameworkldap.OutcomeTimeout, frameworkldap.OutcomeUnavailable,
+		frameworkldap.OutcomeInvalidInput:
+		return outcome
+	default:
+		return frameworkldap.OutcomeUnavailable
+	}
+}
 
 // Middleware records completed requests using only bounded methods, registered
 // route patterns and HTTP status. Install it outside panic recovery and other
@@ -79,6 +139,10 @@ func (registry *Registry) Handler() http.Handler {
 		for label, item := range registry.data {
 			snapshot[label] = item
 		}
+		directorySnapshot := make(map[directoryKey]observation, len(registry.directory))
+		for label, item := range registry.directory {
+			directorySnapshot[label] = item
+		}
 		registry.mu.Unlock()
 
 		labels := make([]key, 0, len(snapshot))
@@ -111,6 +175,35 @@ func (registry *Registry) Handler() http.Handler {
 			fmt.Fprintf(w, "swf_http_request_duration_seconds_bucket%s %d\n", label.textWithBucket("+Inf"), item.count)
 			fmt.Fprintf(w, "swf_http_request_duration_seconds_sum%s %s\n", label.text(), strconv.FormatFloat(item.sum, 'f', -1, 64))
 			fmt.Fprintf(w, "swf_http_request_duration_seconds_count%s %d\n", label.text(), item.count)
+		}
+
+		directoryLabels := make([]directoryKey, 0, len(directorySnapshot))
+		for label := range directorySnapshot {
+			directoryLabels = append(directoryLabels, label)
+		}
+		sort.Slice(directoryLabels, func(i, j int) bool {
+			if directoryLabels[i].outcome != directoryLabels[j].outcome {
+				return directoryLabels[i].outcome < directoryLabels[j].outcome
+			}
+			return directoryLabels[i].stage < directoryLabels[j].stage
+		})
+		fmt.Fprintln(w, "# HELP swf_directory_lookups_total Completed directory user lookups.")
+		fmt.Fprintln(w, "# TYPE swf_directory_lookups_total counter")
+		for _, label := range directoryLabels {
+			item := directorySnapshot[label]
+			fmt.Fprintf(w, "swf_directory_lookups_total{outcome=%s,stage=%s} %d\n", quote(string(label.outcome)), quote(string(label.stage)), item.count)
+		}
+		fmt.Fprintln(w, "# HELP swf_directory_lookup_duration_seconds Directory user lookup duration in seconds.")
+		fmt.Fprintln(w, "# TYPE swf_directory_lookup_duration_seconds histogram")
+		for _, label := range directoryLabels {
+			item := directorySnapshot[label]
+			labels := fmt.Sprintf("outcome=%s,stage=%s", quote(string(label.outcome)), quote(string(label.stage)))
+			for index, upper := range buckets {
+				fmt.Fprintf(w, "swf_directory_lookup_duration_seconds_bucket{%s,le=%s} %d\n", labels, quote(strconv.FormatFloat(upper, 'f', -1, 64)), item.buckets[index])
+			}
+			fmt.Fprintf(w, "swf_directory_lookup_duration_seconds_bucket{%s,le=%s} %d\n", labels, quote("+Inf"), item.count)
+			fmt.Fprintf(w, "swf_directory_lookup_duration_seconds_sum{%s} %s\n", labels, strconv.FormatFloat(item.sum, 'f', -1, 64))
+			fmt.Fprintf(w, "swf_directory_lookup_duration_seconds_count{%s} %d\n", labels, item.count)
 		}
 	})
 }

@@ -141,3 +141,16 @@ projection, missing/ambiguous users and rejected untrusted certificates. Full
 Identity tests, vet and module verification pass locally; ten shuffled directory,
 database and OIDC repetitions pass. These are not live directory acceptance.
 Identity's PostgreSQL/race/backup CI workflow is prepared but not yet run there.
+
+On 2026-09-22 a read-only TLS inspection found that DC01's temporary Samba host
+certificate has no Subject Alternative Name and its presented chain is not
+trusted by the workstation. The framework reader correctly cannot accept that
+certificate with normal hostname verification. Do not copy Identity's legacy
+certificate-pin/SAN bypass into the framework; issue a CA-trusted certificate
+with `dc01.ad.stumpfworks.de` as a DNS SAN before live adapter acceptance.
+
+Directory lookup observations now use fixed outcome/stage sets and duration only.
+The framework metrics registry exports `swf_directory_lookups_total` and
+`swf_directory_lookup_duration_seconds` for Prometheus/Grafana. Usernames, DNs,
+arbitrary errors and credentials are never metric labels. Observer panics are
+contained and cannot change directory authorization behavior.

@@ -54,6 +54,12 @@ consumer-owned. Its local full test suite, vet, module verification and repeated
 synthetic PostgreSQL/OIDC/TLS-LDAP contracts pass. No production adapter switch,
 live LDAP acceptance or database migration occurred.
 
+On 2026-09-22, read-only inspection confirmed that DC01 still presents a
+temporary Samba certificate without a DNS SAN. Secure live framework lookup is
+therefore blocked on certificate replacement, not on an application fallback.
+The staged reader now emits bounded, privacy-safe outcomes and durations, and
+the framework registry exports corresponding Prometheus counter/histogram data.
+
 ## OIDC client progress on 2026-09-13
 
 The framework now has pinned-issuer Discovery and JWKS retrieval, an offline

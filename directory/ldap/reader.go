@@ -28,9 +28,52 @@ type Config struct {
 	URL, BaseDN, BindDN, BindPassword string
 	Roots                             *x509.CertPool
 	Timeout                           time.Duration
+	Observer                          Observer
 }
 
 type User struct{ Username, DisplayName, DN, Mail string }
+
+// LookupOutcome is deliberately bounded so consumers can safely use it as a
+// Prometheus label. Observations never contain usernames, DNs or credentials.
+type LookupOutcome string
+
+const (
+	OutcomeSuccess      LookupOutcome = "success"
+	OutcomeNotFound     LookupOutcome = "not_found"
+	OutcomeAmbiguous    LookupOutcome = "ambiguous"
+	OutcomeCanceled     LookupOutcome = "canceled"
+	OutcomeTimeout      LookupOutcome = "timeout"
+	OutcomeUnavailable  LookupOutcome = "unavailable"
+	OutcomeInvalidInput LookupOutcome = "invalid_input"
+)
+
+type LookupObservation struct {
+	Outcome  LookupOutcome
+	Stage    LookupStage
+	Duration time.Duration
+}
+
+// LookupStage identifies only a bounded protocol phase. It contains no server,
+// account, filter or error text.
+type LookupStage string
+
+const (
+	StageValidation LookupStage = "validation"
+	StageConnect    LookupStage = "connect"
+	StageBind       LookupStage = "bind"
+	StageSearch     LookupStage = "search"
+	StageResult     LookupStage = "result"
+)
+
+// Observer receives one bounded observation per GetUser call. Implementations
+// must return quickly. A panicking observer is isolated from directory policy.
+type Observer interface {
+	ObserveLDAPLookup(LookupObservation)
+}
+
+type ObserverFunc func(LookupObservation)
+
+func (f ObserverFunc) ObserveLDAPLookup(observation LookupObservation) { f(observation) }
 
 type Reader struct {
 	config            Config
@@ -97,22 +140,43 @@ func userFilter(username string) string {
 // GetUser returns one enabled AD/Samba-AD user. Referrals are never followed.
 // Each call owns its connection and closes it on cancellation or deadline.
 func (r *Reader) GetUser(ctx context.Context, username string) (*User, error) {
+	started := time.Now()
+	outcome := OutcomeUnavailable
+	stage := StageValidation
+	defer func() {
+		if r.config.Observer == nil {
+			return
+		}
+		func() {
+			defer func() { _ = recover() }()
+			r.config.Observer.ObserveLDAPLookup(LookupObservation{Outcome: outcome, Stage: stage, Duration: time.Since(started)})
+		}()
+	}()
 	if ctx == nil {
+		outcome = OutcomeInvalidInput
 		return nil, errors.New("directory context required")
 	}
 	if len(username) > 256 || !utf8.ValidString(username) {
+		outcome = OutcomeInvalidInput
 		return nil, errors.New("invalid directory username")
 	}
 	username = strings.TrimSpace(username)
 	if username == "" || strings.ContainsRune(username, 0) {
+		outcome = OutcomeInvalidInput
 		return nil, errors.New("invalid directory username")
 	}
 	ctx, cancel := context.WithTimeout(ctx, r.config.Timeout)
 	defer cancel()
+	stage = StageConnect
 	dialer := tls.Dialer{NetDialer: &net.Dialer{Timeout: r.config.Timeout}, Config: &tls.Config{MinVersion: tls.VersionTLS12, ServerName: r.hostname, RootCAs: r.config.Roots}}
 	raw, err := dialer.DialContext(ctx, "tcp", r.address)
 	if err != nil {
 		if ctx.Err() != nil {
+			if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+				outcome = OutcomeTimeout
+			} else {
+				outcome = OutcomeCanceled
+			}
 			return nil, ctx.Err()
 		}
 		return nil, ErrUnavailable
@@ -126,14 +190,26 @@ func (r *Reader) GetUser(ctx context.Context, username string) (*User, error) {
 	conn.Start()
 	defer conn.Close()
 	conn.SetTimeout(r.config.Timeout)
+	stage = StageBind
 	if err := conn.Bind(r.config.BindDN, r.config.BindPassword); err != nil {
 		if ctx.Err() != nil {
+			if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+				outcome = OutcomeTimeout
+			} else {
+				outcome = OutcomeCanceled
+			}
 			return nil, ctx.Err()
 		}
 		return nil, ErrUnavailable
 	}
+	stage = StageSearch
 	result, err := conn.Search(ldaplib.NewSearchRequest(r.config.BaseDN, ldaplib.ScopeWholeSubtree, ldaplib.NeverDerefAliases, 2, int(r.config.Timeout.Seconds()), false, userFilter(username), []string{"sAMAccountName", "displayName", "mail"}, nil))
 	if ctx.Err() != nil {
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			outcome = OutcomeTimeout
+		} else {
+			outcome = OutcomeCanceled
+		}
 		return nil, ctx.Err()
 	}
 	if err != nil {
@@ -142,10 +218,13 @@ func (r *Reader) GetUser(ctx context.Context, username string) (*User, error) {
 	if len(result.Referrals) > 0 {
 		return nil, ErrUnavailable
 	}
+	stage = StageResult
 	if len(result.Entries) == 0 {
+		outcome = OutcomeNotFound
 		return nil, ErrNotFound
 	}
 	if len(result.Entries) != 1 {
+		outcome = OutcomeAmbiguous
 		return nil, ErrAmbiguous
 	}
 	entry := result.Entries[0]
@@ -156,5 +235,6 @@ func (r *Reader) GetUser(ctx context.Context, username string) (*User, error) {
 	if user.DisplayName == "" {
 		user.DisplayName = user.Username
 	}
+	outcome = OutcomeSuccess
 	return user, nil
 }

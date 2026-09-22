@@ -6,6 +6,9 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
+
+	frameworkldap "github.com/TheRealHZL/stumpfworks-framework/directory/ldap"
 )
 
 func TestMetricsUseRoutePatternAndBoundedMethod(t *testing.T) {
@@ -32,6 +35,28 @@ func TestMetricsUseRoutePatternAndBoundedMethod(t *testing.T) {
 	}
 	if !strings.Contains(body, `le="+Inf"} 1`) {
 		t.Fatal("missing infinite histogram bucket")
+	}
+}
+
+func TestLDAPMetricsUseOnlyBoundedOutcomeLabels(t *testing.T) {
+	registry := New()
+	observer := registry.LDAPObserver()
+	observer.ObserveLDAPLookup(frameworkldap.LookupObservation{Outcome: frameworkldap.OutcomeSuccess, Stage: frameworkldap.StageResult, Duration: 125 * time.Millisecond})
+	observer.ObserveLDAPLookup(frameworkldap.LookupObservation{Outcome: frameworkldap.LookupOutcome("private-user@example.test"), Stage: frameworkldap.LookupStage("private-server"), Duration: -time.Second})
+	response := httptest.NewRecorder()
+	registry.Handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/metrics", nil))
+	body := response.Body.String()
+	for _, expected := range []string{
+		`swf_directory_lookups_total{outcome="success",stage="result"} 1`,
+		`swf_directory_lookups_total{outcome="unavailable",stage="result"} 1`,
+		`swf_directory_lookup_duration_seconds_count{outcome="success",stage="result"} 1`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("missing directory metric %q: %s", expected, body)
+		}
+	}
+	if strings.Contains(body, "private-user") || strings.Contains(body, "private-server") {
+		t.Fatal("unbounded directory outcome exposed")
 	}
 }
 

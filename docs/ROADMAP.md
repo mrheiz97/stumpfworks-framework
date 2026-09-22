@@ -76,6 +76,10 @@ source for sensor, energy, or other existing time-series data; it is not the
 default store for detailed application logs.
 
 The framework already provides JSON logging and opt-in HTTP request metrics.
+The staged LDAPS reader now also exposes bounded lookup outcomes, protocol stage
+and duration;
+the metrics registry exports them as Prometheus counters and histograms without
+usernames, DNs, arbitrary errors, or other high-cardinality labels.
 Still open: a protected metrics endpoint in consuming applications, consistent
 log fields and per-component levels, additional health/DB/auth metrics, a
 collector/deployment example, retention and access rules, and a starter Grafana

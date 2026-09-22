@@ -30,3 +30,9 @@ replacement for Identity's Directory interface. Successful local protocol
 fixtures are not a live AD compatibility claim. Existing product behavior and
 production infrastructure remain unchanged until consumer integration and
 recovery tests are complete. See `../IDENTITY-INTEGRATION.md` for evidence.
+
+Lookup telemetry is limited to fixed outcome/protocol-stage vocabularies and
+duration. This
+supports Prometheus/Grafana without treating usernames, DNs, error strings, or
+other identity data as metric labels. The observer is diagnostic only and may
+not influence lookup results or authorization decisions.
