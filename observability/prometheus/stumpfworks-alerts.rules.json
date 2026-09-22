@@ -61,6 +61,32 @@
           }
         }
       ]
+    },
+    {
+      "name": "stumpfworks-postgres",
+      "interval": "30s",
+      "rules": [
+        {
+          "alert": "StumpfWorksPostgresPoolSaturated",
+          "expr": "sum by (job) (swf_postgres_connections{job=~\"stumpfworks.*\",state=\"total\"}) / clamp_min(sum by (job) (swf_postgres_connections{job=~\"stumpfworks.*\",state=\"max\"}), 1) > 0.85",
+          "for": "10m",
+          "labels": {"severity": "warning"},
+          "annotations": {
+            "summary": "PostgreSQL pool is near capacity",
+            "description": "{{ $labels.job }} used more than 85 percent of its PostgreSQL pool for ten minutes."
+          }
+        },
+        {
+          "alert": "StumpfWorksPostgresAcquireCanceled",
+          "expr": "sum by (job) (increase(swf_postgres_acquire_canceled_total{job=~\"stumpfworks.*\"}[10m])) >= 3",
+          "for": "5m",
+          "labels": {"severity": "warning"},
+          "annotations": {
+            "summary": "PostgreSQL connection requests were canceled",
+            "description": "{{ $labels.job }} recorded repeated canceled PostgreSQL pool acquisitions."
+          }
+        }
+      ]
     }
   ]
 }

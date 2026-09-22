@@ -20,7 +20,7 @@ func TestDashboardIsValidAndPrivacyBounded(t *testing.T) {
 		t.Fatal("stable dashboard UID missing")
 	}
 	text := string(data)
-	for _, metric := range []string{"swf_http_requests_total", "swf_http_request_duration_seconds_bucket", "swf_directory_lookups_total", "swf_directory_lookup_duration_seconds_bucket"} {
+	for _, metric := range []string{"swf_http_requests_total", "swf_http_request_duration_seconds_bucket", "swf_directory_lookups_total", "swf_directory_lookup_duration_seconds_bucket", "swf_postgres_connections", "swf_postgres_acquire_canceled_total"} {
 		if !strings.Contains(text, metric) {
 			t.Fatalf("dashboard does not use %s", metric)
 		}

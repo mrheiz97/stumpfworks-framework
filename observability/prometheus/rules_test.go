@@ -29,7 +29,7 @@ func TestAlertRulesAreBoundedAndActionable(t *testing.T) {
 	if err := json.Unmarshal(data, &file); err != nil {
 		t.Fatal(err)
 	}
-	if len(file.Groups) != 2 {
+	if len(file.Groups) != 3 {
 		t.Fatalf("got %d rule groups", len(file.Groups))
 	}
 	seen := map[string]bool{}
@@ -50,7 +50,7 @@ func TestAlertRulesAreBoundedAndActionable(t *testing.T) {
 			}
 		}
 	}
-	for _, expected := range []string{"StumpfWorksTargetDown", "StumpfWorksHTTP5xxRatioHigh", "StumpfWorksDirectoryUnavailable", "StumpfWorksDirectoryTimeouts", "StumpfWorksDirectoryLatencyHigh"} {
+	for _, expected := range []string{"StumpfWorksTargetDown", "StumpfWorksHTTP5xxRatioHigh", "StumpfWorksDirectoryUnavailable", "StumpfWorksDirectoryTimeouts", "StumpfWorksDirectoryLatencyHigh", "StumpfWorksPostgresPoolSaturated", "StumpfWorksPostgresAcquireCanceled"} {
 		if !seen[expected] {
 			t.Fatalf("missing %s", expected)
 		}

@@ -5,7 +5,10 @@ package integration_test
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"os"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -14,8 +17,41 @@ import (
 	auditpostgres "github.com/TheRealHZL/stumpfworks-framework/audit/postgres"
 	"github.com/TheRealHZL/stumpfworks-framework/data/migrate"
 	frameworkpostgres "github.com/TheRealHZL/stumpfworks-framework/data/postgres"
+	frameworkmetrics "github.com/TheRealHZL/stumpfworks-framework/web/metrics"
 	"github.com/jackc/pgx/v5"
 )
+
+func TestPostgresPoolMetricsFromRealPool(t *testing.T) {
+	url := os.Getenv("SWF_TEST_POSTGRES_URL")
+	if url == "" {
+		t.Skip("SWF_TEST_POSTGRES_URL is not set")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	pool, err := frameworkpostgres.Open(ctx, frameworkpostgres.Options{URL: url, MaxConnections: 4, MinConnections: 0, ConnectTimeout: 5 * time.Second, MaxMessageBytes: 16 << 20, AllowInsecure: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer pool.Close()
+	connection, err := pool.Native().Acquire(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer connection.Release()
+	registry := frameworkmetrics.New()
+	registry.RegisterPostgresPool(pool)
+	response := httptest.NewRecorder()
+	registry.Handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/metrics", nil))
+	body := response.Body.String()
+	if !strings.Contains(body, `swf_postgres_connections{state="acquired"} 1`) || !strings.Contains(body, `swf_postgres_connections{state="max"} 4`) {
+		t.Fatalf("unexpected real pool metrics: %s", body)
+	}
+	for _, forbidden := range []string{"swf-test-only", "postgres://", "database=", "query="} {
+		if strings.Contains(body, forbidden) {
+			t.Fatalf("pool exposition leaked %q", forbidden)
+		}
+	}
+}
 
 func TestPostgresMigrationsAndAudit(t *testing.T) {
 	url := os.Getenv("SWF_TEST_POSTGRES_URL")

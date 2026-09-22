@@ -1,8 +1,8 @@
 # Grafana starter dashboard
 
 Import `stumpfworks-overview.json` and choose a Prometheus datasource and job.
-The dashboard shows target availability, HTTP rate/p95 latency, and directory
-lookup rate/p95 latency by bounded outcome and protocol stage.
+The dashboard shows target availability, HTTP rate/p95 latency, directory
+lookup rate/p95 latency by bounded outcome/stage, and PostgreSQL pool pressure.
 
 It intentionally contains no username, DN, request ID, client ID, raw route, or
 free-form error labels. Protect each application's `/metrics` endpoint with a

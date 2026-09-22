@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	frameworkpg "github.com/TheRealHZL/stumpfworks-framework/data/postgres"
 	frameworkldap "github.com/TheRealHZL/stumpfworks-framework/directory/ldap"
 )
 
@@ -35,6 +36,37 @@ func TestMetricsUseRoutePatternAndBoundedMethod(t *testing.T) {
 	}
 	if !strings.Contains(body, `le="+Inf"} 1`) {
 		t.Fatal("missing infinite histogram bucket")
+	}
+}
+
+type fakePostgresStats struct{ stats frameworkpg.Stats }
+
+func (f fakePostgresStats) Stats() frameworkpg.Stats { return f.stats }
+
+func TestPostgresMetricsContainOnlyBoundedPoolState(t *testing.T) {
+	registry := New()
+	registry.mu.Lock()
+	registry.postgres = fakePostgresStats{stats: frameworkpg.Stats{
+		AcquiredConnections: 2, IdleConnections: 3, MaxConnections: 10, TotalConnections: 5,
+		AcquireCount: 20, CanceledAcquireCount: 1, EmptyAcquireCount: 4,
+		NewConnectionsCount: 6, AcquireDuration: 1500 * time.Millisecond,
+	}}
+	registry.mu.Unlock()
+	response := httptest.NewRecorder()
+	registry.Handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/metrics", nil))
+	body := response.Body.String()
+	for _, expected := range []string{
+		`swf_postgres_connections{state="acquired"} 2`, `swf_postgres_connections{state="idle"} 3`,
+		`swf_postgres_acquire_canceled_total 1`, `swf_postgres_acquire_duration_seconds_total 1.5`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("missing %q: %s", expected, body)
+		}
+	}
+	for _, forbidden := range []string{"database=", "user=", "query=", "host="} {
+		if strings.Contains(body, forbidden) {
+			t.Fatalf("pool metrics exposed %q", forbidden)
+		}
 	}
 }
 

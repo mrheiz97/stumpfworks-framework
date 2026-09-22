@@ -19,6 +19,7 @@ The starter thresholds intentionally require sustained or repeated failures:
 - HTTP 5xx ratio over 5% for ten minutes with active traffic;
 - at least three directory failures or two timeouts in ten minutes;
 - directory p95 above two seconds for ten minutes with active lookups.
+- PostgreSQL pool usage above 85% or repeated canceled acquisitions.
 
 Tune them from observed baselines. Alertmanager owns delivery to ntfy or another
 operator channel. Do not put ntfy tokens, directory identities, raw errors, or

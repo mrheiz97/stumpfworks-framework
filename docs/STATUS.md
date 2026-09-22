@@ -62,6 +62,10 @@ the framework registry exports corresponding Prometheus counter/histogram data.
 An importable Grafana starter dashboard now shows target availability, HTTP
 rate/p95 latency, and directory rate/p95 latency by bounded outcome and stage.
 Its JSON and privacy-label contract are tested; live Grafana import remains open.
+PostgreSQL pool snapshots now expose only bounded connection state and aggregate
+acquire counters/duration. Dashboard panels and starter alerts cover pool usage,
+waiting and cancellations. A real disposable PostgreSQL 17 pool exposition test
+passed three shuffled repetitions; no database identity, URL or SQL is exported.
 
 ## OIDC client progress on 2026-09-13
 

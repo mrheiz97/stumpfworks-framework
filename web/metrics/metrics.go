@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	frameworkpg "github.com/TheRealHZL/stumpfworks-framework/data/postgres"
 	frameworkldap "github.com/TheRealHZL/stumpfworks-framework/directory/ldap"
 )
 
@@ -33,7 +34,10 @@ type Registry struct {
 	mu        sync.Mutex
 	data      map[key]observation
 	directory map[directoryKey]observation
+	postgres  postgresStatsSource
 }
+
+type postgresStatsSource interface{ Stats() frameworkpg.Stats }
 
 type directoryKey struct {
 	outcome frameworkldap.LookupOutcome
@@ -43,6 +47,14 @@ type directoryKey struct {
 // New creates an empty, application-scoped registry.
 func New() *Registry {
 	return &Registry{data: make(map[key]observation), directory: make(map[directoryKey]observation)}
+}
+
+// RegisterPostgresPool adds credential-free pool statistics to this registry.
+// Passing nil removes a previously registered source.
+func (registry *Registry) RegisterPostgresPool(pool *frameworkpg.Pool) {
+	registry.mu.Lock()
+	defer registry.mu.Unlock()
+	registry.postgres = pool
 }
 
 type ldapObserver struct{ registry *Registry }
@@ -143,7 +155,16 @@ func (registry *Registry) Handler() http.Handler {
 		for label, item := range registry.directory {
 			directorySnapshot[label] = item
 		}
+		postgresSource := registry.postgres
 		registry.mu.Unlock()
+		var postgresSnapshot *frameworkpg.Stats
+		if postgresSource != nil {
+			func() {
+				defer func() { _ = recover() }()
+				stats := postgresSource.Stats()
+				postgresSnapshot = &stats
+			}()
+		}
 
 		labels := make([]key, 0, len(snapshot))
 		for label := range snapshot {
@@ -205,7 +226,38 @@ func (registry *Registry) Handler() http.Handler {
 			fmt.Fprintf(w, "swf_directory_lookup_duration_seconds_sum{%s} %s\n", labels, strconv.FormatFloat(item.sum, 'f', -1, 64))
 			fmt.Fprintf(w, "swf_directory_lookup_duration_seconds_count{%s} %d\n", labels, item.count)
 		}
+		if postgresSnapshot != nil {
+			writePostgresMetrics(w, *postgresSnapshot)
+		}
 	})
+}
+
+func writePostgresMetrics(w http.ResponseWriter, stats frameworkpg.Stats) {
+	fmt.Fprintln(w, "# HELP swf_postgres_connections Current PostgreSQL pool connections by bounded state.")
+	fmt.Fprintln(w, "# TYPE swf_postgres_connections gauge")
+	for _, item := range []struct {
+		state string
+		value int32
+	}{
+		{"acquired", stats.AcquiredConnections}, {"constructing", stats.ConstructingConnections},
+		{"idle", stats.IdleConnections}, {"max", stats.MaxConnections}, {"total", stats.TotalConnections},
+	} {
+		fmt.Fprintf(w, "swf_postgres_connections{state=%s} %d\n", quote(item.state), item.value)
+	}
+	for _, item := range []struct {
+		name, help string
+		value      int64
+	}{
+		{"swf_postgres_acquires_total", "Cumulative successful PostgreSQL pool acquires.", stats.AcquireCount},
+		{"swf_postgres_acquire_canceled_total", "Cumulative canceled PostgreSQL pool acquires.", stats.CanceledAcquireCount},
+		{"swf_postgres_acquire_empty_total", "Cumulative PostgreSQL acquires that waited for a connection.", stats.EmptyAcquireCount},
+		{"swf_postgres_connections_created_total", "Cumulative PostgreSQL connections created by the pool.", stats.NewConnectionsCount},
+	} {
+		fmt.Fprintf(w, "# HELP %s %s\n# TYPE %s counter\n%s %d\n", item.name, item.help, item.name, item.name, item.value)
+	}
+	fmt.Fprintln(w, "# HELP swf_postgres_acquire_duration_seconds_total Cumulative time waiting to acquire PostgreSQL connections.")
+	fmt.Fprintln(w, "# TYPE swf_postgres_acquire_duration_seconds_total counter")
+	fmt.Fprintf(w, "swf_postgres_acquire_duration_seconds_total %s\n", strconv.FormatFloat(stats.AcquireDuration.Seconds(), 'f', -1, 64))
 }
 
 func (label key) text() string {
