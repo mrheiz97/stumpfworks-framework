@@ -59,6 +59,9 @@ temporary Samba certificate without a DNS SAN. Secure live framework lookup is
 therefore blocked on certificate replacement, not on an application fallback.
 The staged reader now emits bounded, privacy-safe outcomes and durations, and
 the framework registry exports corresponding Prometheus counter/histogram data.
+An importable Grafana starter dashboard now shows target availability, HTTP
+rate/p95 latency, and directory rate/p95 latency by bounded outcome and stage.
+Its JSON and privacy-label contract are tested; live Grafana import remains open.
 
 ## OIDC client progress on 2026-09-13
 

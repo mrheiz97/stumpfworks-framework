@@ -75,15 +75,16 @@ InfluxDB remains an optional additional
 source for sensor, energy, or other existing time-series data; it is not the
 default store for detailed application logs.
 
-The framework already provides JSON logging and opt-in HTTP request metrics.
+The framework already provides JSON logging, opt-in HTTP request metrics, and an
+importable Grafana starter dashboard for service, HTTP, and directory health.
 The staged LDAPS reader now also exposes bounded lookup outcomes, protocol stage
 and duration;
 the metrics registry exports them as Prometheus counters and histograms without
 usernames, DNs, arbitrary errors, or other high-cardinality labels.
 Still open: a protected metrics endpoint in consuming applications, consistent
 log fields and per-component levels, additional health/DB/auth metrics, a
-collector/deployment example, retention and access rules, and a starter Grafana
-dashboard. Start with a low-maintenance single-node setup; document a path to
+collector/deployment example, retention and access rules, and validated live
+dashboard provisioning. Start with a low-maintenance single-node setup; document a path to
 multiple services and sites, role-based dashboard access, backups, configurable
 retention, and alerting for SMB use without making those requirements mandatory
 for Homelabs. Keep tokens, passwords, PINs, raw OIDC URLs, and other secrets out
