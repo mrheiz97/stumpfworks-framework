@@ -66,6 +66,8 @@ An importable, privacy-safe starter dashboard is available at
 [`observability/grafana/stumpfworks-overview.json`](observability/grafana/stumpfworks-overview.json).
 Starter Prometheus alert rules live in
 [`observability/prometheus`](observability/prometheus).
+Consumers can protect their metrics handler with `metrics.ProtectBearer`; use a
+random runtime secret of at least 32 bytes and never commit it.
 
 ## Status
 

@@ -25,6 +25,7 @@ real consumers validate the design.
 - [x] Concurrent-request overload protection
 - [x] Standard coded errors and RFC 9457 mapping
 - [x] Opt-in Prometheus-compatible HTTP metrics
+- [x] Constant-time bearer protection for consumer metrics endpoints
 - [x] Initial Core and HTTP threat model
 - [x] Initial Auth/OIDC client threat model and 0.3 contract boundary
 - [x] First Identity consumer integration in Access (see `ACCESS-OIDC-INTEGRATION.md`)
