@@ -1,12 +1,33 @@
 # StumpfWorks Framework
 
 StumpfWorks Framework (SWF) is the shared, self-hostable foundation for
-independent StumpfWorks applications. The project is at an early `0.x` stage;
-its public APIs may still change as Identity and Access validate them.
+independent StumpfWorks applications. It targets Homelabs and small businesses
+without requiring a StumpfWorks cloud service.
 
-The Go module path is `github.com/TheRealHZL/stumpfworks-framework`. The
-repository is public; downstream builds do not need `GOPRIVATE` for this
-module.
+The project is currently at the `0.3` development stage. Its public APIs may
+still change while Identity and Access validate them. It is not yet a stable
+`1.0` platform release.
+
+The current Go module path is `github.com/TheRealHZL/stumpfworks-framework`.
+It differs from the repository owner `mrheiz97`; that compatibility decision
+must be resolved and documented before `1.0`. The repository is public, so
+downstream builds do not need `GOPRIVATE` for this module.
+
+## Current capabilities
+
+- application lifecycle, typed configuration and structured redacted logging;
+- safe HTTP defaults, health checks, Problem Details and strict JSON decoding;
+- PostgreSQL pooling, transactions, migrations and an append-only audit store;
+- pinned-issuer OIDC Discovery, JWKS refresh, PKCE login and ID-token validation;
+- encrypted, browser-bound OIDC transaction persistence for consumer storage;
+- bounded read-only LDAPS user lookup with privacy-safe observations;
+- Prometheus-compatible HTTP, PostgreSQL and directory metrics;
+- a Grafana starter dashboard and Prometheus starter alert rules.
+
+Access is the first real OIDC consumer. Identity contains staged, inactive
+PostgreSQL and LDAPS integration work; its production adapters have not been
+switched. RBAC, events/outbox, the Access device protocol, signed releases and
+the final API freeze remain future milestones before `1.0`.
 
 ## Quick start
 
@@ -31,6 +52,10 @@ The example listens on `127.0.0.1:8080` by default and exposes:
 
 - `GET /health/live` — the process is alive;
 - `GET /health/ready` — all registered readiness checks pass.
+
+The minimal application intentionally demonstrates only the foundation. OIDC,
+LDAP and metrics are opt-in library components that consuming applications wire
+with their own policy, storage and secrets.
 
 Configuration is read from environment variables:
 
@@ -69,11 +94,12 @@ Starter Prometheus alert rules live in
 Consumers can protect their metrics handler with `metrics.ProtectBearer`; use a
 random runtime secret of at least 32 bytes and never commit it.
 
-## Status
+## Project status
 
-The current vertical slice provides typed configuration, structured JSON
-logging, build information, health endpoints, safe HTTP defaults, request IDs,
-panic recovery, graceful shutdown, and optional PostgreSQL connectivity.
+The `develop` branch contains the current integration work. Stable releases are
+prepared through reviewed changes and version tags; no `1.0` release exists yet.
+See the roadmap and implementation status for completed checks, current
+limitations and the acceptance evidence from Identity and Access.
 
 ## License
 
