@@ -25,8 +25,47 @@ request decoding, and the audit foundation.
   rollback.
 - The Linux build and current pinned `govulncheck` scan passed.
 
-The local Docker daemon remains unavailable, so PostgreSQL integration is
-verified in CI rather than on the Windows workstation.
+The initial PostgreSQL integration was CI-only because the local Docker daemon
+was unavailable. A disposable native PostgreSQL 17 cluster was subsequently
+used on Windows for the local Identity rehearsals below.
+
+## Local integration preparation, 2026-09-17
+
+- Read-only AD/Samba-AD LDAPS prototype: verified TLS, deadlines, no referrals,
+  escaped filters, 1 MiB wire budget, 16-message cap, 32 nesting levels and 4096
+  BER nodes per message. Config/reader formatting and JSON logging are redacted.
+  Unit/protocol tests pass; a 20-second fuzz run tested about 345,000 inputs.
+- Identity has an inactive PostgreSQL adapter, bounded all-table importer,
+  shared backend contracts, atomic badge-plus-audit operation, pg_dump/restore
+  probe and real OIDC-handler/framework-client contract over trusted local TLS.
+  See `IDENTITY-INTEGRATION.md`. No production cutover or live LDAP acceptance.
+- Go 1.26.8 is now enforced. With matching build/scanner toolchains, scans report
+  no reachable or imported-package findings; one unused OpenPGP module advisory
+  remains. This is not a blanket vulnerability-free dependency claim.
+- Framework PR #32 passed fresh GitHub CI on 2026-09-18, including Linux race
+  detection and PostgreSQL integration. Windows has CGO disabled and no local
+  GCC for race testing. Identity's separate CI changes are still local.
+
+## Identity bridge preparation, 2026-09-18
+
+Identity now has an inactive bridge from its read-only user lookups to a pinned
+framework LDAPS revision. Authentication, admin policy and listing remain
+consumer-owned. Its local full test suite, vet, module verification and repeated
+synthetic PostgreSQL/OIDC/TLS-LDAP contracts pass. No production adapter switch,
+live LDAP acceptance or database migration occurred.
+
+On 2026-09-22, read-only inspection confirmed that DC01 still presents a
+temporary Samba certificate without a DNS SAN. Secure live framework lookup is
+therefore blocked on certificate replacement, not on an application fallback.
+The staged reader now emits bounded, privacy-safe outcomes and durations, and
+the framework registry exports corresponding Prometheus counter/histogram data.
+An importable Grafana starter dashboard now shows target availability, HTTP
+rate/p95 latency, and directory rate/p95 latency by bounded outcome and stage.
+Its JSON and privacy-label contract are tested; live Grafana import remains open.
+PostgreSQL pool snapshots now expose only bounded connection state and aggregate
+acquire counters/duration. Dashboard panels and starter alerts cover pool usage,
+waiting and cancellations. A real disposable PostgreSQL 17 pool exposition test
+passed three shuffled repetitions; no database identity, URL or SQL is exported.
 
 ## OIDC client progress on 2026-09-13
 

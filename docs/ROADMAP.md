@@ -25,6 +25,7 @@ real consumers validate the design.
 - [x] Concurrent-request overload protection
 - [x] Standard coded errors and RFC 9457 mapping
 - [x] Opt-in Prometheus-compatible HTTP metrics
+- [x] Constant-time bearer protection for consumer metrics endpoints
 - [x] Initial Core and HTTP threat model
 - [x] Initial Auth/OIDC client threat model and 0.3 contract boundary
 - [x] First Identity consumer integration in Access (see `ACCESS-OIDC-INTEGRATION.md`)
@@ -44,6 +45,12 @@ real consumers validate the design.
 - [x] Access isolated issuer-outage/recovery tests and live Identity key-rotation acceptance
 - [ ] Deploy and verify Access ntfy alert delivery (notifier prepared locally)
 - [ ] Live issuer-outage acceptance (no planned production shutdown)
+
+## Next integration — Identity directory and PostgreSQL
+
+Identity directory and PostgreSQL migration preparation is tracked in
+`IDENTITY-INTEGRATION.md`. A read-only LDAPS lookup prototype is local work,
+not yet consumer-integrated or accepted against Samba AD.
 
 ## Future candidate — optional AI integration
 
@@ -69,11 +76,20 @@ InfluxDB remains an optional additional
 source for sensor, energy, or other existing time-series data; it is not the
 default store for detailed application logs.
 
-The framework already provides JSON logging and opt-in HTTP request metrics.
+The framework already provides JSON logging, opt-in HTTP request metrics, and an
+importable Grafana starter dashboard for service, HTTP, and directory health.
+Versioned Prometheus starter rules cover sustained service, HTTP, and directory
+failures; delivery remains deployment-owned.
+Credential-free PostgreSQL pool metrics and dashboard/alert coverage include
+connection utilization, waits, cancellations, and cumulative acquire duration.
+The staged LDAPS reader now also exposes bounded lookup outcomes, protocol stage
+and duration;
+the metrics registry exports them as Prometheus counters and histograms without
+usernames, DNs, arbitrary errors, or other high-cardinality labels.
 Still open: a protected metrics endpoint in consuming applications, consistent
 log fields and per-component levels, additional health/DB/auth metrics, a
-collector/deployment example, retention and access rules, and a starter Grafana
-dashboard. Start with a low-maintenance single-node setup; document a path to
+collector/deployment example, retention and access rules, and validated live
+dashboard provisioning. Start with a low-maintenance single-node setup; document a path to
 multiple services and sites, role-based dashboard access, backups, configurable
 retention, and alerting for SMB use without making those requirements mandatory
 for Homelabs. Keep tokens, passwords, PINs, raw OIDC URLs, and other secrets out

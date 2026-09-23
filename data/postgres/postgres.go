@@ -25,6 +25,20 @@ type Options struct {
 // Pool wraps pgxpool with a deliberately small framework API.
 type Pool struct{ pool *pgxpool.Pool }
 
+// Stats is a credential-free snapshot suitable for bounded operational metrics.
+type Stats struct {
+	AcquiredConnections     int32
+	ConstructingConnections int32
+	IdleConnections         int32
+	MaxConnections          int32
+	TotalConnections        int32
+	AcquireCount            int64
+	CanceledAcquireCount    int64
+	EmptyAcquireCount       int64
+	NewConnectionsCount     int64
+	AcquireDuration         time.Duration
+}
+
 // Open parses the configuration, creates the pool, and verifies connectivity.
 func Open(ctx context.Context, options Options) (*Pool, error) {
 	if err := options.validate(); err != nil {
@@ -93,6 +107,19 @@ func (p *Pool) Close() { p.pool.Close() }
 
 // Native exposes pgxpool only for adapters that need transactions or queries.
 func (p *Pool) Native() *pgxpool.Pool { return p.pool }
+
+// Stats returns a point-in-time snapshot without exposing connection strings,
+// SQL text, database names, users, or query parameters.
+func (p *Pool) Stats() Stats {
+	stat := p.pool.Stat()
+	return Stats{
+		AcquiredConnections: stat.AcquiredConns(), ConstructingConnections: stat.ConstructingConns(),
+		IdleConnections: stat.IdleConns(), MaxConnections: stat.MaxConns(), TotalConnections: stat.TotalConns(),
+		AcquireCount: stat.AcquireCount(), CanceledAcquireCount: stat.CanceledAcquireCount(),
+		EmptyAcquireCount: stat.EmptyAcquireCount(), NewConnectionsCount: stat.NewConnsCount(),
+		AcquireDuration: stat.AcquireDuration(),
+	}
+}
 
 // WithinTransaction executes work in a transaction, rolls back on errors or
 // panics, and commits only after the callback succeeds.

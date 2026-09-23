@@ -1,0 +1,92 @@
+{
+  "groups": [
+    {
+      "name": "stumpfworks-service",
+      "interval": "30s",
+      "rules": [
+        {
+          "alert": "StumpfWorksTargetDown",
+          "expr": "up{job=~\"stumpfworks.*\"} == 0",
+          "for": "5m",
+          "labels": {"severity": "critical"},
+          "annotations": {
+            "summary": "StumpfWorks service target is unavailable",
+            "description": "Prometheus could not scrape {{ $labels.job }} on {{ $labels.instance }} for five minutes."
+          }
+        },
+        {
+          "alert": "StumpfWorksHTTP5xxRatioHigh",
+          "expr": "(sum by (job) (rate(swf_http_requests_total{job=~\"stumpfworks.*\",status=~\"5..\"}[10m])) / clamp_min(sum by (job) (rate(swf_http_requests_total{job=~\"stumpfworks.*\"}[10m])), 0.001)) > 0.05 and sum by (job) (rate(swf_http_requests_total{job=~\"stumpfworks.*\"}[10m])) > 0.1",
+          "for": "10m",
+          "labels": {"severity": "warning"},
+          "annotations": {
+            "summary": "StumpfWorks HTTP error ratio is high",
+            "description": "More than five percent of requests for {{ $labels.job }} returned 5xx while traffic was active."
+          }
+        }
+      ]
+    },
+    {
+      "name": "stumpfworks-directory",
+      "interval": "30s",
+      "rules": [
+        {
+          "alert": "StumpfWorksDirectoryUnavailable",
+          "expr": "sum by (job, stage) (increase(swf_directory_lookups_total{job=~\"stumpfworks.*\",outcome=\"unavailable\"}[10m])) >= 3",
+          "for": "5m",
+          "labels": {"severity": "warning"},
+          "annotations": {
+            "summary": "Repeated directory lookup failures",
+            "description": "{{ $labels.job }} recorded repeated directory failures in the bounded {{ $labels.stage }} stage."
+          }
+        },
+        {
+          "alert": "StumpfWorksDirectoryTimeouts",
+          "expr": "sum by (job, stage) (increase(swf_directory_lookups_total{job=~\"stumpfworks.*\",outcome=\"timeout\"}[10m])) >= 2",
+          "for": "5m",
+          "labels": {"severity": "warning"},
+          "annotations": {
+            "summary": "Repeated directory lookup timeouts",
+            "description": "{{ $labels.job }} recorded repeated directory timeouts in the bounded {{ $labels.stage }} stage."
+          }
+        },
+        {
+          "alert": "StumpfWorksDirectoryLatencyHigh",
+          "expr": "histogram_quantile(0.95, sum by (job, stage, le) (rate(swf_directory_lookup_duration_seconds_bucket{job=~\"stumpfworks.*\"}[10m]))) > 2 and sum by (job, stage) (rate(swf_directory_lookup_duration_seconds_count{job=~\"stumpfworks.*\"}[10m])) > 0.01",
+          "for": "10m",
+          "labels": {"severity": "warning"},
+          "annotations": {
+            "summary": "Directory lookup latency is high",
+            "description": "The p95 directory duration for {{ $labels.job }} in {{ $labels.stage }} exceeded two seconds while lookups were active."
+          }
+        }
+      ]
+    },
+    {
+      "name": "stumpfworks-postgres",
+      "interval": "30s",
+      "rules": [
+        {
+          "alert": "StumpfWorksPostgresPoolSaturated",
+          "expr": "sum by (job) (swf_postgres_connections{job=~\"stumpfworks.*\",state=\"total\"}) / clamp_min(sum by (job) (swf_postgres_connections{job=~\"stumpfworks.*\",state=\"max\"}), 1) > 0.85",
+          "for": "10m",
+          "labels": {"severity": "warning"},
+          "annotations": {
+            "summary": "PostgreSQL pool is near capacity",
+            "description": "{{ $labels.job }} used more than 85 percent of its PostgreSQL pool for ten minutes."
+          }
+        },
+        {
+          "alert": "StumpfWorksPostgresAcquireCanceled",
+          "expr": "sum by (job) (increase(swf_postgres_acquire_canceled_total{job=~\"stumpfworks.*\"}[10m])) >= 3",
+          "for": "5m",
+          "labels": {"severity": "warning"},
+          "annotations": {
+            "summary": "PostgreSQL connection requests were canceled",
+            "description": "{{ $labels.job }} recorded repeated canceled PostgreSQL pool acquisitions."
+          }
+        }
+      ]
+    }
+  ]
+}

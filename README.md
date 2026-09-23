@@ -10,7 +10,7 @@ module.
 
 ## Quick start
 
-Requirements: Go 1.26 or newer. Older toolchains contain known vulnerabilities
+Requirements: Go 1.26.8 or a newer patched release. Older toolchains contain known vulnerabilities
 in standard-library paths used by SWF.
 
 ```bash
@@ -62,6 +62,12 @@ The first OIDC verifier and its integration boundary are documented in
 [`docs/OIDC.md`](docs/OIDC.md).
 The current acceptance evidence and remaining release gates are tracked in
 [`docs/STATUS.md`](docs/STATUS.md).
+An importable, privacy-safe starter dashboard is available at
+[`observability/grafana/stumpfworks-overview.json`](observability/grafana/stumpfworks-overview.json).
+Starter Prometheus alert rules live in
+[`observability/prometheus`](observability/prometheus).
+Consumers can protect their metrics handler with `metrics.ProtectBearer`; use a
+random runtime secret of at least 32 bytes and never commit it.
 
 ## Status
 
