@@ -52,6 +52,43 @@ Identity directory and PostgreSQL migration preparation is tracked in
 `IDENTITY-INTEGRATION.md`. A read-only LDAPS lookup prototype is local work,
 not yet consumer-integrated or accepted against Samba AD.
 
+## 0.4 — Identity backend and authorization contracts
+
+Work in this milestone is validated in Identity before an API is treated as
+stable framework surface.
+
+- [x] Stage the read-only framework LDAPS bridge behind a default-off switch
+- [x] Stage Identity's PostgreSQL schema, importer and backend contract tests
+- [x] Run PostgreSQL, backup/restore and framework integration checks in CI
+- [ ] Define explicit audit-failure policy for authentication, denials and
+  security-sensitive state changes
+- [ ] Replace Identity's concrete SQLite server dependency with the smallest
+  backend interface shared by SQLite and PostgreSQL
+- [ ] Wire a fail-closed, default-SQLite PostgreSQL runtime selection without
+  running migrations under runtime credentials
+- [ ] Rehearse backup, import, verification and rollback using synthetic data
+  through the real Identity startup path
+- [ ] Replace the Samba AD certificate with a trusted certificate containing
+  the required DNS SAN, then accept the read-only LDAPS adapter live
+- [ ] Derive the first RBAC/permission contract from real Identity and Access
+  requirements; keep application-specific roles outside the framework
+
+No production database or directory cutover is part of the framework milestone.
+Those changes require a separate Identity deployment gate and rollback record.
+
+## Path to 1.0
+
+- [ ] Resolve and document the mismatch between the public repository owner
+  and the existing Go module path before freezing imports
+- [ ] Validate RBAC and audit contracts with Identity and Access
+- [ ] Add events/outbox and webhooks only from a real consumer requirement
+- [ ] Validate the device protocol with real Access nodes
+- [ ] Complete protected metrics collection, logs, dashboards and alert delivery
+- [ ] Produce an SBOM and signed, traceable release artifacts
+- [ ] Freeze and document public APIs in a release candidate
+- [ ] Test upgrades, migrations, backups and rollback for both consumers
+- [ ] Confirm Identity and Access are production-capable on the release candidate
+
 ## Future candidate — optional AI integration
 
 When a real application needs AI, evaluate a small provider-neutral text
