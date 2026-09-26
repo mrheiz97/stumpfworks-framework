@@ -60,7 +60,7 @@ stable framework surface.
 - [x] Stage the read-only framework LDAPS bridge behind a default-off switch
 - [x] Stage Identity's PostgreSQL schema, importer and backend contract tests
 - [x] Run PostgreSQL, backup/restore and framework integration checks in CI
-- [ ] Define explicit audit-failure policy for authentication, denials and
+- [x] Define explicit audit-failure policy for authentication, denials and
   security-sensitive state changes
 - [x] Replace Identity's concrete SQLite server dependency with the smallest
   backend interface shared by SQLite and PostgreSQL
