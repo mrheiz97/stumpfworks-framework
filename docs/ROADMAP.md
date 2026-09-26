@@ -66,7 +66,7 @@ stable framework surface.
   backend interface shared by SQLite and PostgreSQL
 - [x] Wire a fail-closed, default-SQLite PostgreSQL runtime selection without
   running migrations under runtime credentials
-- [ ] Rehearse backup, import, verification and rollback using synthetic data
+- [x] Rehearse backup, import, verification and rollback using synthetic data
   through the real Identity startup path
 - [ ] Replace the Samba AD certificate with a trusted certificate containing
   the required DNS SAN, then accept the read-only LDAPS adapter live
