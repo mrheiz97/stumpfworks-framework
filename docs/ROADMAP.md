@@ -62,7 +62,7 @@ stable framework surface.
 - [x] Run PostgreSQL, backup/restore and framework integration checks in CI
 - [ ] Define explicit audit-failure policy for authentication, denials and
   security-sensitive state changes
-- [ ] Replace Identity's concrete SQLite server dependency with the smallest
+- [x] Replace Identity's concrete SQLite server dependency with the smallest
   backend interface shared by SQLite and PostgreSQL
 - [ ] Wire a fail-closed, default-SQLite PostgreSQL runtime selection without
   running migrations under runtime credentials
