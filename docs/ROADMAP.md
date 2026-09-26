@@ -64,7 +64,7 @@ stable framework surface.
   security-sensitive state changes
 - [x] Replace Identity's concrete SQLite server dependency with the smallest
   backend interface shared by SQLite and PostgreSQL
-- [ ] Wire a fail-closed, default-SQLite PostgreSQL runtime selection without
+- [x] Wire a fail-closed, default-SQLite PostgreSQL runtime selection without
   running migrations under runtime credentials
 - [ ] Rehearse backup, import, verification and rollback using synthetic data
   through the real Identity startup path
