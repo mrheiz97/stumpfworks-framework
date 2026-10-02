@@ -70,7 +70,7 @@ stable framework surface.
   through the real Identity startup path
 - [ ] Replace the Samba AD certificate with a trusted certificate containing
   the required DNS SAN, then accept the read-only LDAPS adapter live
-- [ ] Derive the first RBAC/permission contract from real Identity and Access
+- [x] Derive the first RBAC/permission contract from real Identity and Access
   requirements; keep application-specific roles outside the framework
 
 No production database or directory cutover is part of the framework milestone.
