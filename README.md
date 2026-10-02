@@ -20,6 +20,7 @@ downstream builds do not need `GOPRIVATE` for this module.
 - PostgreSQL pooling, transactions, migrations and an append-only audit store;
 - pinned-issuer OIDC Discovery, JWKS refresh, PKCE login and ID-token validation;
 - encrypted, browser-bound OIDC transaction persistence for consumer storage;
+- bounded, policy-neutral exact-match permission sets;
 - bounded read-only LDAPS user lookup with privacy-safe observations;
 - Prometheus-compatible HTTP, PostgreSQL and directory metrics;
 - a Grafana starter dashboard and Prometheus starter alert rules.
