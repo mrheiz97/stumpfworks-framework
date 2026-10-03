@@ -83,7 +83,8 @@ values; omitted values retain safe defaults. Unknown JSON fields fail startup.
 | `SWF_POSTGRES_ALLOW_INSECURE` | `false` | explicitly permit plaintext for trusted local development |
 
 See [the architecture](docs/ARCHITECTURE.md), [roadmap](docs/ROADMAP.md),
-[development guide](docs/DEVELOPMENT.md), and [security policy](docs/SECURITY.md).
+[development guide](docs/DEVELOPMENT.md), [release procedure](docs/RELEASES.md),
+and [security policy](docs/SECURITY.md).
 The first OIDC verifier and its integration boundary are documented in
 [`docs/OIDC.md`](docs/OIDC.md).
 The current acceptance evidence and remaining release gates are tracked in

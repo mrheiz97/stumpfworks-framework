@@ -84,7 +84,8 @@ Those changes require a separate Identity deployment gate and rollback record.
 - [ ] Add events/outbox and webhooks only from a real consumer requirement
 - [ ] Validate the device protocol with real Access nodes
 - [ ] Complete protected metrics collection, logs, dashboards and alert delivery
-- [ ] Produce an SBOM and signed, traceable release artifacts
+- [ ] Validate the prepared SBOM and keyless signed provenance pipeline with a
+  real release candidate
 - [ ] Freeze and document public APIs in a release candidate
 - [ ] Test upgrades, migrations, backups and rollback for both consumers
 - [ ] Confirm Identity and Access are production-capable on the release candidate

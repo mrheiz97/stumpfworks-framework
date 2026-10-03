@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the signed release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Verify release source and tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          echo "$VERSION" | grep -Eq '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?$'
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          tag_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$VERSION" --jq .object.sha)"
+          tag_type="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$VERSION" --jq .object.type)"
+          test "$tag_type" = tag
+          gh api "repos/$GITHUB_REPOSITORY/git/tags/$tag_sha" --jq '.verification.verified' | grep -qx true
+
+      - name: Test release source
+        run: |
+          test -z "$(gofmt -l .)"
+          go mod verify
+          go vet ./...
+          go test -race ./...
+          go build ./...
+          go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
+
+      - name: Build source archive and SBOM
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          mkdir -p dist
+          git archive --format=tar.gz \
+            --prefix="stumpfworks-framework-$VERSION/" \
+            --output="dist/stumpfworks-framework-$VERSION.tar.gz" HEAD
+          go run github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@v1.10.0 \
+            mod -json -type library -noserial -notimestamp \
+            -output "dist/stumpfworks-framework-$VERSION.sbom.cdx.json" .
+          cd dist
+          sha256sum *.tar.gz *.sbom.cdx.json > SHA256SUMS
+
+      - name: Attest build provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: |
+            dist/*.tar.gz
+            dist/*.sbom.cdx.json
+            dist/SHA256SUMS
+
+      - name: Attest SBOM for the source archive
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: dist/*.tar.gz
+          sbom-path: dist/stumpfworks-framework-${{ github.ref_name }}.sbom.cdx.json
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ github.ref_name }}
+        run: >-
+          gh release create "$VERSION" dist/*
+          --repo "$GITHUB_REPOSITORY"
+          --verify-tag
+          --generate-notes
+          --title "$VERSION"

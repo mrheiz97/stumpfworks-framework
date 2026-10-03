@@ -121,10 +121,21 @@ to an operator topic yet; no production notification has been verified.
 
 ## Before tagging alpha.1
 
-- [x] The maintainer confirmed Apache-2.0 on 2026-09-14. The module path
-  matches the GitHub repository (ADR 0009).
+- [x] The maintainer confirmed Apache-2.0 on 2026-09-14.
+- [ ] The historical `TheRealHZL` module path still redirects to the repository
+  now owned by `mrheiz97`. The canonical path and consumer migration must be
+  resolved before the first stable release (ADR 0009).
 - [x] Add a permanent private vulnerability-reporting address:
   `hello@stumpfworks.de`.
 - [x] Perform the documented quick start in a clean local checkout. On
   2026-09-14, `go test ./...` and the minimal-app build passed; both liveness
   and readiness returned HTTP 200. No PostgreSQL service was required.
+
+## Release pipeline preparation, 2026-10-03
+
+- A tag-only workflow now requires a GitHub-verified signed annotated tag whose
+  commit belongs to `main`.
+- The workflow produces a source archive, CycloneDX SBOM and SHA-256 checksums,
+  then creates keyless provenance and SBOM attestations before publishing.
+- The pipeline remains unaccepted until a real release-candidate tag completes
+  successfully and its downloaded artifacts are independently verified.
