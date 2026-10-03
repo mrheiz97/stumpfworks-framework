@@ -84,6 +84,8 @@ values; omitted values retain safe defaults. Unknown JSON fields fail startup.
 See [the architecture](docs/ARCHITECTURE.md), [roadmap](docs/ROADMAP.md),
 [development guide](docs/DEVELOPMENT.md), [release procedure](docs/RELEASES.md),
 and [security policy](docs/SECURITY.md).
+The validated consumer boundary for permissions and audit is recorded in
+[`docs/AUTHORIZATION-AUDIT-CONTRACT.md`](docs/AUTHORIZATION-AUDIT-CONTRACT.md).
 The first OIDC verifier and its integration boundary are documented in
 [`docs/OIDC.md`](docs/OIDC.md).
 The current acceptance evidence and remaining release gates are tracked in

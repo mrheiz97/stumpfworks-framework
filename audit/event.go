@@ -6,8 +6,18 @@ import (
 	"encoding/json"
 	"errors"
 	"time"
+	"unicode/utf8"
 
 	"github.com/mrheiz97/stumpfworks-framework/security"
+)
+
+const (
+	MaxIDBytes            = 128
+	MaxActorBytes         = 256
+	MaxActionBytes        = 100
+	MaxResourceBytes      = 512
+	MaxCorrelationIDBytes = 128
+	MaxMetadataBytes      = 16 * 1024
 )
 
 // Result describes the outcome of an audited action.
@@ -34,20 +44,23 @@ type Event struct {
 
 // Validate checks the stable audit envelope.
 func (e Event) Validate() error {
-	if e.ID == "" {
-		return errors.New("audit event ID is required")
+	if err := validateText("event ID", e.ID, MaxIDBytes, true); err != nil {
+		return err
 	}
 	if e.Timestamp.IsZero() {
 		return errors.New("audit event timestamp is required")
 	}
-	if e.Actor == "" {
-		return errors.New("audit actor is required")
+	if err := validateText("actor", e.Actor, MaxActorBytes, true); err != nil {
+		return err
 	}
-	if e.Action == "" {
-		return errors.New("audit action is required")
+	if err := validateText("action", e.Action, MaxActionBytes, true); err != nil {
+		return err
 	}
-	if e.Resource == "" {
-		return errors.New("audit resource is required")
+	if err := validateText("resource", e.Resource, MaxResourceBytes, true); err != nil {
+		return err
+	}
+	if err := validateText("correlation ID", e.CorrelationID, MaxCorrelationIDBytes, false); err != nil {
+		return err
 	}
 	switch e.Result {
 	case ResultSuccess, ResultFailure, ResultDenied:
@@ -60,10 +73,26 @@ func (e Event) Validate() error {
 	return nil
 }
 
+func validateText(name, value string, maximum int, required bool) error {
+	if required && value == "" {
+		return errors.New("audit " + name + " is required")
+	}
+	if !utf8.ValidString(value) {
+		return errors.New("audit " + name + " must be valid UTF-8")
+	}
+	if len(value) > maximum {
+		return errors.New("audit " + name + " exceeds its size limit")
+	}
+	return nil
+}
+
 func validateMetadata(metadata map[string]any) error {
 	encoded, err := json.Marshal(metadata)
 	if err != nil {
 		return errors.New("audit metadata must be valid JSON")
+	}
+	if len(encoded) > MaxMetadataBytes {
+		return errors.New("audit metadata exceeds its size limit")
 	}
 	var value any
 	if err := json.Unmarshal(encoded, &value); err != nil {

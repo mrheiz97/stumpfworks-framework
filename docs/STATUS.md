@@ -139,3 +139,17 @@ to an operator topic yet; no production notification has been verified.
   then creates keyless provenance and SBOM attestations before publishing.
 - The pipeline remains unaccepted until a real release-candidate tag completes
   successfully and its downloaded artifacts are independently verified.
+
+## Authorization and audit acceptance, 2026-10-03
+
+- Access consumes the exact-match framework permission set while retaining its
+  own administrative override and physical-action policy. Negative tests prove
+  that `access.admin` does not grant `access.action.execute`.
+- Identity retains separate administrator and self-service audiences rather than
+  inventing shared roles. Both consumers keep OIDC claims separate from local
+  authorization.
+- The framework audit envelope now bounds every text field and metadata size in
+  addition to nesting depth and sensitive-key rejection.
+- Access provides transactional audit rollback tests. Identity provides atomic
+  tests for its migrated critical badge flows; its remaining best-effort legacy
+  mutations stay an explicit production-cutover blocker.

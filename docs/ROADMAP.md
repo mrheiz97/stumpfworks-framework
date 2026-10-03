@@ -80,7 +80,8 @@ Those changes require a separate Identity deployment gate and rollback record.
 
 - [x] Resolve and document the mismatch between the public repository owner
   and the existing Go module path; migrate Identity and Access
-- [ ] Validate RBAC and audit contracts with Identity and Access
+- [x] Validate authorization and audit contracts with Identity and Access;
+  retain Identity's documented legacy audit limitation as a production gate
 - [ ] Add events/outbox and webhooks only from a real consumer requirement
 - [ ] Validate the device protocol with real Access nodes
 - [ ] Complete protected metrics collection, logs, dashboards and alert delivery
