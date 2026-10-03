@@ -78,8 +78,8 @@ Those changes require a separate Identity deployment gate and rollback record.
 
 ## Path to 1.0
 
-- [ ] Resolve and document the mismatch between the public repository owner
-  and the existing Go module path before freezing imports
+- [x] Resolve and document the mismatch between the public repository owner
+  and the existing Go module path; migrate Identity and Access
 - [ ] Validate RBAC and audit contracts with Identity and Access
 - [ ] Add events/outbox and webhooks only from a real consumer requirement
 - [ ] Validate the device protocol with real Access nodes

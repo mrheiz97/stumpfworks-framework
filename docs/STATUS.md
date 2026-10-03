@@ -122,9 +122,9 @@ to an operator topic yet; no production notification has been verified.
 ## Before tagging alpha.1
 
 - [x] The maintainer confirmed Apache-2.0 on 2026-09-14.
-- [ ] The historical `TheRealHZL` module path still redirects to the repository
-  now owned by `mrheiz97`. The canonical path and consumer migration must be
-  resolved before the first stable release (ADR 0009).
+- [x] The canonical module path now matches the `mrheiz97` repository owner.
+  Framework CI passed at `86400d1`; Access CI passed at `8823384` and Identity
+  CI passed at `4d1d042` after both consumers migrated (ADR 0009).
 - [x] Add a permanent private vulnerability-reporting address:
   `hello@stumpfworks.de`.
 - [x] Perform the documented quick start in a clean local checkout. On
