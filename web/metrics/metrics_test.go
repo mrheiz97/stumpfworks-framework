@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	frameworkpg "github.com/TheRealHZL/stumpfworks-framework/data/postgres"
-	frameworkldap "github.com/TheRealHZL/stumpfworks-framework/directory/ldap"
+	frameworkpg "github.com/mrheiz97/stumpfworks-framework/data/postgres"
+	frameworkldap "github.com/mrheiz97/stumpfworks-framework/directory/ldap"
 )
 
 func TestMetricsUseRoutePatternAndBoundedMethod(t *testing.T) {

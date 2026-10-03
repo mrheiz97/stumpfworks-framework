@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	directoryldap "github.com/TheRealHZL/stumpfworks-framework/directory/ldap"
+	directoryldap "github.com/mrheiz97/stumpfworks-framework/directory/ldap"
 )
 
 // TestLDAPReadOnly requires deliberate opt-in and injected service credentials.

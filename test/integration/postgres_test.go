@@ -13,12 +13,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TheRealHZL/stumpfworks-framework/audit"
-	auditpostgres "github.com/TheRealHZL/stumpfworks-framework/audit/postgres"
-	"github.com/TheRealHZL/stumpfworks-framework/data/migrate"
-	frameworkpostgres "github.com/TheRealHZL/stumpfworks-framework/data/postgres"
-	frameworkmetrics "github.com/TheRealHZL/stumpfworks-framework/web/metrics"
 	"github.com/jackc/pgx/v5"
+	"github.com/mrheiz97/stumpfworks-framework/audit"
+	auditpostgres "github.com/mrheiz97/stumpfworks-framework/audit/postgres"
+	"github.com/mrheiz97/stumpfworks-framework/data/migrate"
+	frameworkpostgres "github.com/mrheiz97/stumpfworks-framework/data/postgres"
+	frameworkmetrics "github.com/mrheiz97/stumpfworks-framework/web/metrics"
 )
 
 func TestPostgresPoolMetricsFromRealPool(t *testing.T) {

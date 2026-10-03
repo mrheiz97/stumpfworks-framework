@@ -8,10 +8,9 @@ The project is currently at the `0.3` development stage. Its public APIs may
 still change while Identity and Access validate them. It is not yet a stable
 `1.0` platform release.
 
-The current Go module path is `github.com/TheRealHZL/stumpfworks-framework`.
-It differs from the repository owner `mrheiz97`; that compatibility decision
-must be resolved and documented before `1.0`. The repository is public, so
-downstream builds do not need `GOPRIVATE` for this module.
+The current Go module path is `github.com/mrheiz97/stumpfworks-framework`.
+It matches the current repository owner. The repository is public, so downstream
+builds do not need `GOPRIVATE` for this module.
 
 ## Current capabilities
 

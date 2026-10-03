@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TheRealHZL/stumpfworks-framework/auth/oidc"
+	"github.com/mrheiz97/stumpfworks-framework/auth/oidc"
 )
 
 // TestIdentityDiscovery is opt-in. It checks the real provider's public OIDC

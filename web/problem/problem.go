@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	coreerrors "github.com/TheRealHZL/stumpfworks-framework/core/errors"
+	coreerrors "github.com/mrheiz97/stumpfworks-framework/core/errors"
 )
 
 // Details is the stable public error representation.

@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	idpkg "github.com/TheRealHZL/stumpfworks-framework/core/id"
-	"github.com/TheRealHZL/stumpfworks-framework/web/problem"
+	idpkg "github.com/mrheiz97/stumpfworks-framework/core/id"
+	"github.com/mrheiz97/stumpfworks-framework/web/problem"
 )
 
 type requestIDKey struct{}
