@@ -82,8 +82,10 @@ Those changes require a separate Identity deployment gate and rollback record.
   and the existing Go module path; migrate Identity and Access
 - [x] Validate authorization and audit contracts with Identity and Access;
   retain Identity's documented legacy audit limitation as a production gate
-- [ ] Add events/outbox and webhooks only from a real consumer requirement
-- [ ] Validate the device protocol with real Access nodes
+- [x] Keep events/outbox and webhooks out of 1.0 because no real consumer
+  requirement currently justifies the operational complexity
+- [x] Validate the device protocol's functional path with the real Access
+  reference node; retain electrical and crash/journal acceptance as release gates
 - [ ] Complete protected metrics collection, logs, dashboards and alert delivery
 - [ ] Validate the prepared SBOM and keyless signed provenance pipeline with a
   real release candidate

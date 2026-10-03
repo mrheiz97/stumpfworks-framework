@@ -153,3 +153,14 @@ to an operator topic yet; no production notification has been verified.
 - Access provides transactional audit rollback tests. Identity provides atomic
   tests for its migrated critical badge flows; its remaining best-effort legacy
   mutations stay an explicit production-cutover blocker.
+
+## Device and event-boundary acceptance, 2026-10-03
+
+- Access records real enrollment, authenticated polling, stable command IDs,
+  acknowledgement and revocation with the ESP8266 reference node. The operator
+  confirmed both `FULL_OPEN` and `PEDESTRIAN_OPEN` on the real gate.
+- Electrical measurements plus crash/journal fault injection remain Access
+  release gates; they do not invalidate the accepted protocol flow.
+- No current consumer requires an outbox, broker or webhook contract. Those
+  components are deliberately excluded from 1.0 until an application provides
+  delivery, ordering and retry requirements.
