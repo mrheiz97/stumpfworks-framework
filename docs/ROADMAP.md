@@ -87,6 +87,11 @@ Those changes require a separate Identity deployment gate and rollback record.
 - [x] Validate the device protocol's functional path with the real Access
   reference node; retain electrical and crash/journal acceptance as release gates
 - [ ] Complete protected metrics collection, logs, dashboards and alert delivery
+  - [x] Access exposes opt-in bearer-protected framework HTTP metrics
+  - [x] Access has an importable Grafana dashboard and Prometheus starter alerts
+  - [ ] Centralize structured logs through Alloy/journald and Loki
+  - [ ] Provision and validate the dashboard and alerts in a live installation
+  - [ ] Connect an operator-owned alert destination such as ntfy
 - [ ] Validate the prepared SBOM and keyless signed provenance pipeline with a
   real release candidate
 - [ ] Freeze and document public APIs in a release candidate
@@ -127,10 +132,12 @@ The staged LDAPS reader now also exposes bounded lookup outcomes, protocol stage
 and duration;
 the metrics registry exports them as Prometheus counters and histograms without
 usernames, DNs, arbitrary errors, or other high-cardinality labels.
-Still open: a protected metrics endpoint in consuming applications, consistent
-log fields and per-component levels, additional health/DB/auth metrics, a
-collector/deployment example, retention and access rules, and validated live
-dashboard provisioning. Start with a low-maintenance single-node setup; document a path to
+Access now exposes the framework HTTP registry through an opt-in,
+bearer-protected endpoint and ships a focused Grafana dashboard plus Prometheus
+scrape and alert examples. Still open: the equivalent Identity integration,
+consistent log fields and per-component levels, additional health/DB/auth
+metrics, a collector/deployment example, retention and access rules, and
+validated live dashboard provisioning. Start with a low-maintenance single-node setup; document a path to
 multiple services and sites, role-based dashboard access, backups, configurable
 retention, and alerting for SMB use without making those requirements mandatory
 for Homelabs. Keep tokens, passwords, PINs, raw OIDC URLs, and other secrets out
