@@ -176,7 +176,10 @@ application-specific refresh alerts remains separate work.
 - Prometheus now monitors itself, Alertmanager, Loki and Alloy. Validated rules
   cover target outages, Prometheus-to-Alertmanager failures, notification
   delivery failures, Loki server errors and dropped Alloy log entries. All five
-  current scrape targets, including Access, were healthy after activation.
-- Identity application metrics and the remaining retention, backup and access
-  policy work are still open; this is not a claim of full observability or
-  production readiness.
+  initial scrape targets, including Access, were healthy after activation.
+- Identity's prepared bearer-protected framework metrics were then deployed with
+  a systemd credential, verified Homelab TLS and dedicated availability,
+  error-rate and latency alerts. Unauthorized access returns HTTP 401 and all
+  six current scrape targets were healthy after activation.
+- The remaining retention, backup and access policy work is still open; this is
+  not a claim of full observability or production readiness.

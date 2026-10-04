@@ -88,6 +88,8 @@ Those changes require a separate Identity deployment gate and rollback record.
   reference node; retain electrical and crash/journal acceptance as release gates
 - [ ] Complete protected metrics collection, logs, dashboards and alert delivery
   - [x] Access exposes opt-in bearer-protected framework HTTP metrics
+  - [x] Identity exposes the same bearer-protected framework HTTP metrics and is
+    scraped over verified TLS with dedicated health, error-rate and latency rules
   - [x] Access has an importable Grafana dashboard and Prometheus starter alerts
   - [x] Centralize structured logs through Alloy/journald and Loki
     - [x] Collect Docker-host journald logs into a local 14-day Loki store
@@ -139,9 +141,9 @@ The staged LDAPS reader now also exposes bounded lookup outcomes, protocol stage
 and duration;
 the metrics registry exports them as Prometheus counters and histograms without
 usernames, DNs, arbitrary errors, or other high-cardinality labels.
-Access now exposes the framework HTTP registry through an opt-in,
-bearer-protected endpoint and ships a focused Grafana dashboard plus Prometheus
-scrape and alert examples. Still open: the equivalent Identity integration,
+Access and Identity now expose the framework HTTP registry through opt-in,
+bearer-protected endpoints and are scraped over verified TLS with focused
+Prometheus alerts. Access also ships a focused Grafana dashboard. Still open:
 consistent log fields and per-component levels, additional health/DB/auth
 metrics, a collector/deployment example, retention and access rules, and
 validated live dashboard provisioning. Start with a low-maintenance single-node setup; document a path to
