@@ -97,6 +97,8 @@ Those changes require a separate Identity deployment gate and rollback record.
     rules in a live Prometheus/Grafana installation
   - [x] Connect and validate an operator-owned ntfy destination through
     Alertmanager with a dedicated token and internal TLS
+  - [x] Monitor Prometheus, Alertmanager, Loki and Alloy themselves and alert on
+    target outages, notification failures, Loki server errors and dropped logs
 - [ ] Validate the prepared SBOM and keyless signed provenance pipeline with a
   real release candidate
 - [ ] Freeze and document public APIs in a release candidate

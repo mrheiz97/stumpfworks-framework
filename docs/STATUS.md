@@ -116,8 +116,9 @@ acceptance remain open; the isolated outage test is not a live outage test. The
 production provider was not deliberately shut down.
 
 Access has prepared an optional ntfy notifier for refresh failure, stale-key
-escalation, and recovery, with local TLS tests. It is not deployed or connected
-to an operator topic yet; no production notification has been verified.
+escalation, and recovery, with local TLS tests. Central Alertmanager delivery to
+the operator-owned ntfy topic has since been deployed and verified; wiring the
+application-specific refresh alerts remains separate work.
 
 ## Before tagging alpha.1
 
@@ -164,3 +165,18 @@ to an operator topic yet; no production notification has been verified.
 - No current consumer requires an outbox, broker or webhook contract. Those
   components are deliberately excluded from 1.0 until an application provides
   delivery, ordering and retry requirements.
+
+## Live observability acceptance, 2026-10-04
+
+- The single-node Prometheus, Grafana, Loki, Alloy and Alertmanager deployment
+  collects protected Access metrics and bounded-label journald logs from the
+  Docker, Access and Identity hosts.
+- The operator confirmed authenticated alert delivery through Alertmanager to
+  ntfy over separately trusted internal TLS.
+- Prometheus now monitors itself, Alertmanager, Loki and Alloy. Validated rules
+  cover target outages, Prometheus-to-Alertmanager failures, notification
+  delivery failures, Loki server errors and dropped Alloy log entries. All five
+  current scrape targets, including Access, were healthy after activation.
+- Identity application metrics and the remaining retention, backup and access
+  policy work are still open; this is not a claim of full observability or
+  production readiness.
