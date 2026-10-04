@@ -90,7 +90,8 @@ Those changes require a separate Identity deployment gate and rollback record.
   - [x] Access exposes opt-in bearer-protected framework HTTP metrics
   - [x] Access has an importable Grafana dashboard and Prometheus starter alerts
   - [ ] Centralize structured logs through Alloy/journald and Loki
-  - [ ] Provision and validate the dashboard and alerts in a live installation
+  - [x] Provision and validate the Access dashboard, protected scrape and alert
+    rules in a live Prometheus/Grafana installation
   - [ ] Connect an operator-owned alert destination such as ntfy
 - [ ] Validate the prepared SBOM and keyless signed provenance pipeline with a
   real release candidate
