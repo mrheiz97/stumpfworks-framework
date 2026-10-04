@@ -13,3 +13,7 @@ configuration and configure the same value in Prometheus scrape authorization.
 The dashboard is a starter for Homelab and small-business installations. Alert
 destinations, retention, Loki log collection, tenant separation, and backups
 remain deployment-owned and are not configured by this file.
+
+`stumpfworks-logs.json` is the matching Loki dashboard. Choose the provisioned
+Loki datasource and one or more bounded container labels. It deliberately does
+not extract arbitrary JSON fields into labels.

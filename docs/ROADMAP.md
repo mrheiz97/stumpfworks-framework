@@ -90,6 +90,9 @@ Those changes require a separate Identity deployment gate and rollback record.
   - [x] Access exposes opt-in bearer-protected framework HTTP metrics
   - [x] Access has an importable Grafana dashboard and Prometheus starter alerts
   - [ ] Centralize structured logs through Alloy/journald and Loki
+    - [x] Collect Docker-host journald logs into a local 14-day Loki store
+    - [x] Provision a bounded-label Grafana logs dashboard
+    - [ ] Add protected Alloy agents for the Access and Identity hosts
   - [x] Provision and validate the Access dashboard, protected scrape and alert
     rules in a live Prometheus/Grafana installation
   - [x] Connect and validate an operator-owned ntfy destination through

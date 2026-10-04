@@ -31,3 +31,28 @@ func TestDashboardIsValidAndPrivacyBounded(t *testing.T) {
 		}
 	}
 }
+
+func TestLogsDashboardIsValidAndPrivacyBounded(t *testing.T) {
+	data, err := os.ReadFile("stumpfworks-logs.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var dashboard map[string]any
+	if err := json.Unmarshal(data, &dashboard); err != nil {
+		t.Fatal(err)
+	}
+	if dashboard["uid"] != "stumpfworks-logs" {
+		t.Fatal("stable logs dashboard UID missing")
+	}
+	text := strings.ToLower(string(data))
+	for _, required := range []string{"count_over_time", "container=~", "stumpfworks logs"} {
+		if !strings.Contains(text, required) {
+			t.Fatalf("logs dashboard does not contain %q", required)
+		}
+	}
+	for _, forbidden := range []string{"username", "user_id", "request_id", "client_id", "authorization", "password"} {
+		if strings.Contains(text, forbidden) {
+			t.Fatalf("logs dashboard contains forbidden field %q", forbidden)
+		}
+	}
+}

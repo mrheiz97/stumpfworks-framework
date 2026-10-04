@@ -1,0 +1,44 @@
+{
+  "annotations": {"list": []},
+  "description": "Central Docker journal logs collected by Grafana Alloy and stored in Loki.",
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "panels": [
+    {
+      "datasource": {"type": "loki", "uid": "${loki}"},
+      "description": "Log volume by selected container. Labels are bounded to host, source, container and priority.",
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"axisCenteredZero": false, "axisColorMode": "text", "axisPlacement": "auto", "drawStyle": "line", "fillOpacity": 15, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false}, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": {"type": "linear"}, "showPoints": "never", "spanNulls": false, "stacking": {"group": "A", "mode": "normal"}, "thresholdsStyle": {"mode": "off"}}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}, "unit": "ops"}, "overrides": []},
+      "gridPos": {"h": 7, "w": 24, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"legend": {"calcs": [], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"editorMode": "code", "expr": "sum by (container) (count_over_time({container=~\"$container\"}[$__auto]))", "legendFormat": "{{container}}", "queryType": "range", "refId": "A"}],
+      "title": "Log volume",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "${loki}"},
+      "description": "Raw journal messages for the selected containers. Use search filters in Explore for investigations.",
+      "gridPos": {"h": 16, "w": 24, "x": 0, "y": 7},
+      "id": 2,
+      "options": {"dedupStrategy": "none", "enableInfiniteScrolling": false, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true},
+      "targets": [{"editorMode": "code", "expr": "{container=~\"$container\"}", "queryType": "range", "refId": "A"}],
+      "title": "Container logs",
+      "type": "logs"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["stumpfworks", "loki", "logs", "privacy-safe"],
+  "templating": {"list": [
+    {"current": {}, "hide": 0, "includeAll": false, "label": "Loki", "multi": false, "name": "loki", "options": [], "query": "loki", "refresh": 1, "regex": "", "type": "datasource"},
+    {"current": {}, "datasource": {"type": "loki", "uid": "${loki}"}, "definition": "label_values(container)", "hide": 0, "includeAll": true, "label": "Container", "multi": true, "name": "container", "options": [], "query": {"label": "container", "refId": "LokiVariableQuery", "stream": ""}, "refresh": 1, "regex": "", "sort": 1, "type": "query"}
+  ]},
+  "time": {"from": "now-1h", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "StumpfWorks Logs",
+  "uid": "stumpfworks-logs",
+  "version": 1,
+  "weekStart": ""
+}
