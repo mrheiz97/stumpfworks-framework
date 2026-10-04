@@ -92,7 +92,8 @@ Those changes require a separate Identity deployment gate and rollback record.
   - [ ] Centralize structured logs through Alloy/journald and Loki
   - [x] Provision and validate the Access dashboard, protected scrape and alert
     rules in a live Prometheus/Grafana installation
-  - [ ] Connect an operator-owned alert destination such as ntfy
+  - [x] Connect and validate an operator-owned ntfy destination through
+    Alertmanager with a dedicated token and internal TLS
 - [ ] Validate the prepared SBOM and keyless signed provenance pipeline with a
   real release candidate
 - [ ] Freeze and document public APIs in a release candidate
