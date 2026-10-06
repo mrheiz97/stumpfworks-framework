@@ -5,6 +5,31 @@ follows Semantic Versioning; APIs may change during `0.x` development.
 
 ## [Unreleased]
 
+## [0.9.0-rc.1] - 2026-10-06
+
+### Added
+
+- Consumer-validated OIDC login, key refresh, permission and audit contracts.
+- Bounded read-only LDAPS lookup with live Identity activation over verified TLS.
+- PostgreSQL pool observations and privacy-bounded HTTP/directory metrics.
+- Access, Identity and central-log Grafana dashboards plus Prometheus alerts.
+- Tested single-node observability backup and isolated restore verification.
+- Release-candidate public API and compatibility policy.
+
+### Changed
+
+- Re-scoped events, outbox, webhooks, AI and device SDK abstractions out of 1.0
+  until a real consumer justifies their public contracts.
+- Standardized the public module path as
+  `github.com/mrheiz97/stumpfworks-framework`.
+
+### Security
+
+- Added bearer-protected metrics, mTLS log ingestion, bounded metric labels and
+  centralized secret-safe logs.
+- Validated OIDC signing-key overlap/removal, stale-key behavior and consumer
+  recovery without transferring application authorization into Identity claims.
+
 ## [0.1.0-alpha.1] - 2026-09-14
 
 ### Added

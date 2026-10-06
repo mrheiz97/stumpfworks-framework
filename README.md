@@ -4,8 +4,8 @@ StumpfWorks Framework (SWF) is the shared, self-hostable foundation for
 independent StumpfWorks applications. It targets Homelabs and small businesses
 without requiring a StumpfWorks cloud service.
 
-The project is currently at the `0.3` development stage. Its public APIs may
-still change while Identity and Access validate them. It is not yet a stable
+The project is preparing its `0.9` release candidate. Its candidate public API
+is frozen for final Identity and Access acceptance, but it is not yet a stable
 `1.0` platform release.
 
 The current Go module path is `github.com/mrheiz97/stumpfworks-framework`.
@@ -24,10 +24,11 @@ builds do not need `GOPRIVATE` for this module.
 - Prometheus-compatible HTTP, PostgreSQL and directory metrics;
 - a Grafana starter dashboard and Prometheus starter alert rules.
 
-Access is the first real OIDC consumer. Identity contains staged, inactive
-PostgreSQL and LDAPS integration work; its production adapters have not been
-switched. RBAC, events/outbox, the Access device protocol, signed releases and
-the final API freeze remain future milestones before `1.0`.
+Access is the first real OIDC consumer. Identity now uses the framework's
+read-only LDAPS adapter for individual user reads while retaining its existing
+authentication, listing and application policy. Its PostgreSQL migration remains
+staged and inactive. RBAC/audit and the Access device protocol are validated;
+events/outbox remain deliberately excluded until a consumer needs them.
 
 ## Quick start
 
@@ -83,7 +84,9 @@ values; omitted values retain safe defaults. Unknown JSON fields fail startup.
 
 See [the architecture](docs/ARCHITECTURE.md), [roadmap](docs/ROADMAP.md),
 [development guide](docs/DEVELOPMENT.md), [release procedure](docs/RELEASES.md),
-and [security policy](docs/SECURITY.md).
+and [security policy](docs/SECURITY.md). The candidate public API and
+compatibility rules are recorded in
+[`docs/API-STABILITY.md`](docs/API-STABILITY.md).
 The validated consumer boundary for permissions and audit is recorded in
 [`docs/AUTHORIZATION-AUDIT-CONTRACT.md`](docs/AUTHORIZATION-AUDIT-CONTRACT.md).
 The first OIDC verifier and its integration boundary are documented in
