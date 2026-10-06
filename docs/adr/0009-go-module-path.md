@@ -2,23 +2,25 @@
 
 - Status: Accepted
 - Date: 2026-09-13
+- Amended: 2026-10-03
 
 ## Context
 
-The initial module path was `github.com/stumpfworks/framework`, but the private
-GitHub repository is `github.com/TheRealHZL/stumpfworks-framework`. A mismatch
-would complicate imports from Identity and Access and require an unplanned vanity
-import or redirect service.
+The initial module path was `github.com/stumpfworks/framework`, followed by the
+historical owner path `github.com/TheRealHZL/stumpfworks-framework`. GitHub now
+hosts the public repository under `github.com/mrheiz97/stumpfworks-framework`.
+Keeping the redirected historical path would make ownership and long-term import
+stability unclear before version 1.0.
 
 ## Decision
 
-Use `github.com/TheRealHZL/stumpfworks-framework` as the canonical Go module
+Use `github.com/mrheiz97/stumpfworks-framework` as the canonical Go module
 path. Package imports, examples, tests, and build metadata use that path.
 
 ## Consequences
 
-Consumers need GitHub access to this private repository. They should configure
-`GOPRIVATE=github.com/TheRealHZL/stumpfworks-framework` in their own build
-environment and use their normal credential helper; credentials do not belong
-in source, command examples, or CI logs. A future repository transfer would be
-a deliberate module-path migration, not an implicit rename.
+The pre-1.0 migration is intentionally breaking. Identity and Access must update
+their imports and module requirements in the same integration cycle. Historical
+pseudo-versions remain addressable through GitHub's redirect, but new releases
+and consumer updates use only the canonical `mrheiz97` path. A future repository
+transfer must preserve that path or use a deliberate vanity import migration.

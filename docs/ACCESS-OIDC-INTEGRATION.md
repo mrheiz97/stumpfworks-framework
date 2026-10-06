@@ -1,6 +1,11 @@
 # Access OIDC consumer integration plan
 
-Status: preparation only. Neither Access nor Identity is changed here.
+Status: Access reports the framework-backed consumer deployed and a successful
+real browser login on 2026-09-14. A controlled live Identity signing-key rotation
+and isolated issuer-outage/recovery tests also passed. This document retains the
+original design and acceptance checklist; see `STATUS.md` for the current summary.
+Live issuer-outage acceptance and a dedicated refresh alert remain open. Access
+runs the framework refresh loop and logs each result.
 
 ## Existing consumer boundary
 
@@ -28,13 +33,23 @@ Code, PKCE S256, RS256, and `client_secret_basic`, which match `auth/oidc`.
 4. Keep the old login implementation available for rollback until the new path
    passes tests. Do not use the process-local `TransactionStore` for Access.
 
-The current attempts table stores plaintext nonce and PKCE verifier; migration
-needs a sealed `bytea` record. Existing pending attempts can expire after five
-minutes before cutover. The codec key must survive restarts and be shared by
+The original attempts table stored plaintext nonce and PKCE verifier. Access's
+framework adapter now stores the sealed transaction encoded in the existing
+verifier column, avoiding an immediate schema change. Pending attempts can
+expire after five minutes during cutover. The codec key must survive restarts and be shared by
 replicas; rotation must overlap pending attempts or intentionally invalidate
 them. It must not be logged or committed.
 
 ## Acceptance before rollout
+
+An opt-in first-stage live contract check is available in
+`test/contract/identity_test.go`. Set `SWF_TEST_IDENTITY_ISSUER` and
+`SWF_TEST_IDENTITY_CLIENT_ID`, plus `SWF_TEST_IDENTITY_CA_FILE` for a private
+Homelab CA, then run `go test ./test/contract -v`. It verifies Identity's
+Discovery/JWKS and that the framework can start a PKCE S256 login. It does not
+authenticate a user, exchange a code, test browser cookie behaviour, or prove
+Access account/session integration. Do not put real client secrets in test
+configuration or the repository.
 
 - Browser test with Identity's cross-site 303-to-GET callback and the
   `SameSite=Lax` binding cookie. Access currently uses `SameSite=None`; do not
@@ -45,3 +60,34 @@ them. It must not be logged or committed.
   record, wrong issuer/key, unlinked or inactive user, and issuer outage.
 - Confirm existing Access sessions, roles, physical grants, local login,
   audit, and rate limits are unchanged. No production credentials in tests.
+
+## Production change gate and rollback
+
+The framework-based Access replacement was deployed on 2026-09-14 according to
+Access's validation and rollout records. Its restricted pre-change backup and
+rollback script live on the Access host; this framework repository does not
+contain them. The current Access checkout has no Git commits, so its local
+source tree alone is not a sufficient rollback artifact. For any further binary
+or schema change:
+
+1. Identify the exact active binary and configuration paths from the local
+   deployment documentation and validate them on the host without printing
+   environment-file contents or secrets.
+2. Record checksums of the active binary and relevant non-secret artifacts.
+   Create a new, restricted, change-specific backup of the binary, service
+   configuration, and environment file on the host. Verify the backup files
+   exist and their checksums match. Do not copy secrets into the repository.
+3. Confirm a recent restorable PostgreSQL backup. A migration that replaces
+   plaintext transaction columns needs an explicit database rollback plan;
+   existing pending OIDC attempts may be allowed to expire before cutover.
+4. Build and test the new Access binary locally, including negative OIDC,
+   session, role, grant, local-login, audit, and rate-limit cases. Keep the old
+   path available until the new one is proven.
+5. Deploy in a maintenance window; check service readiness and complete a real
+   browser login with the operator. On failure, stop the new path, restore the
+   exact backed-up binary/configuration (and database state if changed), then
+   verify readiness and the local recovery login.
+
+The Access rollout record reports a change-specific backup and successful
+post-deployment login. Verify a fresh backup and rollback for each later update;
+do not treat the first deployment's backup as current indefinitely.

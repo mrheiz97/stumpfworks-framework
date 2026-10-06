@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	coreerrors "github.com/TheRealHZL/stumpfworks-framework/core/errors"
+	coreerrors "github.com/mrheiz97/stumpfworks-framework/core/errors"
 )
 
 func TestWriteUsesRequestCorrelationID(t *testing.T) {

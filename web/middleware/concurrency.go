@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/TheRealHZL/stumpfworks-framework/web/problem"
+	"github.com/mrheiz97/stumpfworks-framework/web/problem"
 )
 
 // LimitConcurrency bounds simultaneous requests. Queue expiry returns a safe

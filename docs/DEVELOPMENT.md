@@ -2,7 +2,7 @@
 
 ## Quality checks
 
-Use Go 1.26 or newer:
+Use Go 1.26.8 or a newer patched release:
 
 ```bash
 gofmt -w .
@@ -16,7 +16,7 @@ go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
 Release builds can inject version metadata:
 
 ```bash
-go build -ldflags "-X github.com/TheRealHZL/stumpfworks-framework/core/version.Version=0.1.0 -X github.com/TheRealHZL/stumpfworks-framework/core/version.Commit=$GIT_COMMIT -X github.com/TheRealHZL/stumpfworks-framework/core/version.BuildTime=$BUILD_TIME" ./examples/minimal-app
+go build -ldflags "-X github.com/mrheiz97/stumpfworks-framework/core/version.Version=0.1.0 -X github.com/mrheiz97/stumpfworks-framework/core/version.Commit=$GIT_COMMIT -X github.com/mrheiz97/stumpfworks-framework/core/version.BuildTime=$BUILD_TIME" ./examples/minimal-app
 ```
 
 The race detector needs CGO locally. Linux CI runs it on every change.

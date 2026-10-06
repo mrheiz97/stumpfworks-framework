@@ -1,16 +1,38 @@
 # StumpfWorks Framework
 
 StumpfWorks Framework (SWF) is the shared, self-hostable foundation for
-independent StumpfWorks applications. The project is at an early `0.x` stage;
-its public APIs may still change as Identity and Access validate them.
+independent StumpfWorks applications. It targets Homelabs and small businesses
+without requiring a StumpfWorks cloud service.
 
-The Go module path is `github.com/TheRealHZL/stumpfworks-framework`. The
-repository is private; downstream builds need GitHub access and should set
-`GOPRIVATE=github.com/TheRealHZL/stumpfworks-framework` in their environment.
+The project is preparing its `0.9` release candidate. Its candidate public API
+is frozen for final Identity and Access acceptance, but it is not yet a stable
+`1.0` platform release.
+
+The current Go module path is `github.com/mrheiz97/stumpfworks-framework`.
+It matches the current repository owner. The repository is public, so downstream
+builds do not need `GOPRIVATE` for this module.
+
+## Current capabilities
+
+- application lifecycle, typed configuration and structured redacted logging;
+- safe HTTP defaults, health checks, Problem Details and strict JSON decoding;
+- PostgreSQL pooling, transactions, migrations and an append-only audit store;
+- pinned-issuer OIDC Discovery, JWKS refresh, PKCE login and ID-token validation;
+- encrypted, browser-bound OIDC transaction persistence for consumer storage;
+- bounded, policy-neutral exact-match permission sets;
+- bounded read-only LDAPS user lookup with privacy-safe observations;
+- Prometheus-compatible HTTP, PostgreSQL and directory metrics;
+- a Grafana starter dashboard and Prometheus starter alert rules.
+
+Access is the first real OIDC consumer. Identity now uses the framework's
+read-only LDAPS adapter for individual user reads while retaining its existing
+authentication, listing and application policy. Its PostgreSQL migration remains
+staged and inactive. RBAC/audit and the Access device protocol are validated;
+events/outbox remain deliberately excluded until a consumer needs them.
 
 ## Quick start
 
-Requirements: Go 1.26 or newer. Older toolchains contain known vulnerabilities
+Requirements: Go 1.26.8 or a newer patched release. Older toolchains contain known vulnerabilities
 in standard-library paths used by SWF.
 
 ```bash
@@ -31,6 +53,10 @@ The example listens on `127.0.0.1:8080` by default and exposes:
 
 - `GET /health/live` — the process is alive;
 - `GET /health/ready` — all registered readiness checks pass.
+
+The minimal application intentionally demonstrates only the foundation. OIDC,
+LDAP and metrics are opt-in library components that consuming applications wire
+with their own policy, storage and secrets.
 
 Configuration is read from environment variables:
 
@@ -57,17 +83,29 @@ values; omitted values retain safe defaults. Unknown JSON fields fail startup.
 | `SWF_POSTGRES_ALLOW_INSECURE` | `false` | explicitly permit plaintext for trusted local development |
 
 See [the architecture](docs/ARCHITECTURE.md), [roadmap](docs/ROADMAP.md),
-[development guide](docs/DEVELOPMENT.md), and [security policy](docs/SECURITY.md).
+[development guide](docs/DEVELOPMENT.md), [release procedure](docs/RELEASES.md),
+and [security policy](docs/SECURITY.md). The candidate public API and
+compatibility rules are recorded in
+[`docs/API-STABILITY.md`](docs/API-STABILITY.md).
+The validated consumer boundary for permissions and audit is recorded in
+[`docs/AUTHORIZATION-AUDIT-CONTRACT.md`](docs/AUTHORIZATION-AUDIT-CONTRACT.md).
 The first OIDC verifier and its integration boundary are documented in
 [`docs/OIDC.md`](docs/OIDC.md).
 The current acceptance evidence and remaining release gates are tracked in
 [`docs/STATUS.md`](docs/STATUS.md).
+An importable, privacy-safe starter dashboard is available at
+[`observability/grafana/stumpfworks-overview.json`](observability/grafana/stumpfworks-overview.json).
+Starter Prometheus alert rules live in
+[`observability/prometheus`](observability/prometheus).
+Consumers can protect their metrics handler with `metrics.ProtectBearer`; use a
+random runtime secret of at least 32 bytes and never commit it.
 
-## Status
+## Project status
 
-The current vertical slice provides typed configuration, structured JSON
-logging, build information, health endpoints, safe HTTP defaults, request IDs,
-panic recovery, graceful shutdown, and optional PostgreSQL connectivity.
+The `develop` branch contains the current integration work. Stable releases are
+prepared through reviewed changes and version tags; no `1.0` release exists yet.
+See the roadmap and implementation status for completed checks, current
+limitations and the acceptance evidence from Identity and Access.
 
 ## License
 

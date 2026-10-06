@@ -15,10 +15,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TheRealHZL/stumpfworks-framework/auth/oidc"
-	frameworkpostgres "github.com/TheRealHZL/stumpfworks-framework/data/postgres"
 	jose "github.com/go-jose/go-jose/v4"
 	"github.com/jackc/pgx/v5"
+	"github.com/mrheiz97/stumpfworks-framework/auth/oidc"
+	frameworkpostgres "github.com/mrheiz97/stumpfworks-framework/data/postgres"
 )
 
 func TestOIDCSealedPostgresAttemptIsBrowserBoundAndOneUse(t *testing.T) {

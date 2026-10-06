@@ -3,7 +3,7 @@ package postgres
 import (
 	"embed"
 
-	"github.com/TheRealHZL/stumpfworks-framework/data/migrate"
+	"github.com/mrheiz97/stumpfworks-framework/data/migrate"
 )
 
 //go:embed migrations/*.up.sql

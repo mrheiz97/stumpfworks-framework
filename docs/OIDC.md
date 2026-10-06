@@ -46,10 +46,29 @@ already started may complete within their separate five-minute lifetime. After
 each successful refresh, construct and publish a new `LoginClient` for new
 logins. Process-local pending transactions retain their original client
 snapshot and should call `transaction.Complete` at callback.
+`ConfigurationCache.Status()` reports the last successful refresh, expiry time,
+and whether the snapshot is currently fresh without making a network request.
+Consumers can expose those values in protected health/metrics endpoints and
+alert before expiry. A failed refresh leaves the last-success and expiry values
+unchanged. Applications may run `ConfigurationCache.Run(ctx, interval, observe)`
+in their own managed goroutine. It refreshes immediately, then at an interval
+between one second and half the configured maximum age; the observer receives
+every result and the new status. A failed refresh is retried on the next tick,
+but the snapshot still expires on its original deadline. Cancel the context on
+shutdown. The application remains responsible for exposing alerts and keeping
+local/recovery login available when the issuer is down.
 Unknown keys fail closed until a trusted refresh completes. Tokens cannot
 redirect key fetching via `jku`, `x5u`, or embedded keys. Only RS256 public
 signing keys with unique `kid`,
 `alg=RS256`, and `use=sig` are accepted.
+
+For signing-key rotation, first publish both old and new public keys in JWKS.
+Allow consumers to refresh successfully before signing with the new key. Keep
+the old public key available until all old-signed pending logins and tokens can
+expire, including refresh propagation and clock skew; then remove it and
+verify that fresh snapshots reject it. Do not rotate by replacing the sole key
+in one step. The local cache test covers the overlap and removal behaviour;
+rotation against a deployed provider remains a separate acceptance check.
 
 `Begin` generates unpredictable state, nonce, and PKCE verifier.
 `TransactionStore` is an optional bounded, process-local helper that stores the
