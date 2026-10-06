@@ -91,7 +91,7 @@ func TestLDAPProtocolResults(t *testing.T) {
 		count    int
 		referral bool
 		want     error
-	}{{"one", 1, false, nil}, {"missing", 0, false, ErrNotFound}, {"duplicate", 2, false, ErrAmbiguous}, {"referral", 1, true, ErrUnavailable}} {
+	}{{"one", 1, false, nil}, {"missing", 0, false, ErrNotFound}, {"duplicate", 2, false, ErrAmbiguous}, {"entry with referral", 1, true, nil}, {"referral only", 0, true, ErrUnavailable}} {
 		t.Run(tc.name, func(t *testing.T) {
 			reader, closeFixture := protocolFixture(t, tc.count, tc.referral)
 			defer closeFixture()
