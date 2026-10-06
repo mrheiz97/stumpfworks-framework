@@ -215,7 +215,10 @@ func (r *Reader) GetUser(ctx context.Context, username string) (*User, error) {
 	if err != nil {
 		return nil, ErrUnavailable
 	}
-	if len(result.Referrals) > 0 {
+	// AD may append referrals for other naming contexts even when the pinned
+	// base DN produced a local entry. We never follow those referrals, but they
+	// must not invalidate one unambiguous result from the configured directory.
+	if len(result.Entries) == 0 && len(result.Referrals) > 0 {
 		return nil, ErrUnavailable
 	}
 	stage = StageResult
