@@ -84,9 +84,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ github.ref_name }}
-        run: >-
-          gh release create "$VERSION" dist/*
-          --repo "$GITHUB_REPOSITORY"
-          --verify-tag
-          --generate-notes
-          --title "$VERSION"
+        run: |
+          release_flags=()
+          if [[ "$VERSION" == *-* ]]; then
+            release_flags+=(--prerelease)
+          fi
+          gh release create "$VERSION" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes \
+            --title "$VERSION" \
+            "${release_flags[@]}"
