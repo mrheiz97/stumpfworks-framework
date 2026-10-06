@@ -184,5 +184,34 @@ application-specific refresh alerts remains separate work.
 - A focused Identity Grafana dashboard was provisioned and verified through the
   Grafana API. It presents availability, bounded status rates, server-error
   ratio and latency without identity or authentication labels.
-- The remaining retention, backup and access policy work is still open; this is
-  not a claim of full observability or production readiness.
+- This validates the observability path, but does not by itself establish
+  overall application production readiness.
+
+## Observability recovery acceptance, 2026-10-06
+
+- A root-only consistent backup captured deployment configuration and the
+  Prometheus, Grafana, Alertmanager, Loki and Alloy volumes during a short,
+  monitoring-only maintenance window.
+- Every archive checksum passed. An isolated restore verified Grafana's SQLite
+  integrity, Prometheus TSDB analysis and restored Loki content, then removed
+  all temporary volumes.
+- The live stack restarted automatically and all six scrape targets were
+  healthy. Prometheus retains 15 days and Loki 14 days. Access and SMB-specific
+  boundaries are recorded in `OBSERVABILITY-OPERATIONS.md`.
+- The validated copy currently resides on the Docker host. An encrypted
+  off-host copy remains an operator responsibility and is required for actual
+  host-loss disaster recovery.
+
+## Live Identity directory activation, 2026-10-06
+
+- DC01 now presents a Homelab-CA-signed LDAPS certificate for
+  `dc01.ad.stumpfworks.de` with DNS, IPv4 and IPv6 SANs. The private key was
+  generated and retained on DC01. Samba, verified LDAPS and the AD database
+  check passed after restart; the previous TLS directory remains a rollback.
+- Identity enables the framework adapter only for `GetUser` and `UserExists`.
+  Existing password authentication, user listing, writes and SQLite persistence
+  remain unchanged. Health, OIDC Discovery and runtime selection passed with an
+  automatic rollback rehearsal.
+- A fresh Access browser login is still required to exercise the live framework
+  lookup through token issuance. Until then, activation is verified but final
+  consumer acceptance remains open.

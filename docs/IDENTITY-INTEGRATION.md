@@ -1,7 +1,9 @@
 # Identity integration: bounded first steps
 
-Status: local preparation, not deployed. Identity's current LDAP adapter and
-SQLite store remain unchanged. Do not couple directory and database cutovers.
+Status: read-only framework directory lookup deployed on 2026-10-06; Identity's
+password authentication, listing, writes and SQLite store remain unchanged. Do
+not couple directory and database cutovers. A fresh real Access OIDC login is
+still required for final consumer acceptance.
 
 ## Framework boundary
 
@@ -30,10 +32,10 @@ ListUsers and both authentication methods remain with the existing adapter.
 The bridge must project framework User fields to Identity User and translate
 framework ErrNotFound to Identity ErrUserNotFound. Transport/cancellation errors
 must not become "user missing" or trigger automatic insecure fallback.
-This overlay is preparation only: no directory bridge or startup switch
-has been added to Identity yet. The staged PostgreSQL adapter now imports a
-pinned framework revision, independently of directory wiring. Decide whether mixed read/auth adapters are
-acceptable before enabling it, and ensure both use the exact same directory.
+The overlay is enabled only for `GetUser` and `UserExists`; Identity's existing
+adapter continues password authentication and listing against the exact same
+directory. The staged PostgreSQL adapter remains independent of this directory
+wiring.
 
 ## PostgreSQL migration inventory
 
@@ -148,6 +150,17 @@ trusted by the workstation. The framework reader correctly cannot accept that
 certificate with normal hostname verification. Do not copy Identity's legacy
 certificate-pin/SAN bypass into the framework; issue a CA-trusted certificate
 with `dc01.ad.stumpfworks.de` as a DNS SAN before live adapter acceptance.
+
+On 2026-10-06 DC01 received a Homelab-CA-signed server certificate containing
+the required DNS SAN plus its IPv4 and IPv6 addresses. The key was generated on
+DC01 and never transferred. Samba restarted successfully, LDAPS hostname and CA
+verification passed, and `samba-tool dbcheck --cross-ncs` reported zero errors.
+Identity then enabled the default-off framework read adapter through a systemd
+drop-in while retaining its existing password authentication and listing code.
+Identity health, OIDC Discovery, the verified LDAPS handshake and the active
+runtime selection passed. Both hosts retain root-only rollback directories. A
+fresh browser login through Access is still needed to exercise a real lookup and
+token issuance before calling the live consumer acceptance complete.
 
 Directory lookup observations now use fixed outcome/stage sets and duration only.
 The framework metrics registry exports `swf_directory_lookups_total` and

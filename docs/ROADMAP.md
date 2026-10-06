@@ -49,8 +49,8 @@ real consumers validate the design.
 ## Next integration — Identity directory and PostgreSQL
 
 Identity directory and PostgreSQL migration preparation is tracked in
-`IDENTITY-INTEGRATION.md`. A read-only LDAPS lookup prototype is local work,
-not yet consumer-integrated or accepted against Samba AD.
+`IDENTITY-INTEGRATION.md`. The read-only LDAPS lookup bridge is active against
+Samba AD; one fresh real consumer login remains its final acceptance check.
 
 ## 0.4 — Identity backend and authorization contracts
 
@@ -68,8 +68,9 @@ stable framework surface.
   running migrations under runtime credentials
 - [x] Rehearse backup, import, verification and rollback using synthetic data
   through the real Identity startup path
-- [ ] Replace the Samba AD certificate with a trusted certificate containing
-  the required DNS SAN, then accept the read-only LDAPS adapter live
+- [x] Replace the Samba AD certificate with a trusted certificate containing
+  the required DNS SAN and activate the read-only LDAPS adapter with rollback
+- [ ] Confirm the active read-only adapter through a fresh real Access OIDC login
 - [x] Derive the first RBAC/permission contract from real Identity and Access
   requirements; keep application-specific roles outside the framework
 
@@ -86,7 +87,7 @@ Those changes require a separate Identity deployment gate and rollback record.
   requirement currently justifies the operational complexity
 - [x] Validate the device protocol's functional path with the real Access
   reference node; retain electrical and crash/journal acceptance as release gates
-- [ ] Complete protected metrics collection, logs, dashboards and alert delivery
+- [x] Complete protected metrics collection, logs, dashboards and alert delivery
   - [x] Access exposes opt-in bearer-protected framework HTTP metrics
   - [x] Identity exposes the same bearer-protected framework HTTP metrics and is
     scraped over verified TLS with dedicated health, error-rate and latency rules
@@ -102,6 +103,8 @@ Those changes require a separate Identity deployment gate and rollback record.
     Alertmanager with a dedicated token and internal TLS
   - [x] Monitor Prometheus, Alertmanager, Loki and Alloy themselves and alert on
     target outages, notification failures, Loki server errors and dropped logs
+  - [x] Document retention and access boundaries and validate a complete
+    configuration/volume backup through an isolated restore test
 - [ ] Validate the prepared SBOM and keyless signed provenance pipeline with a
   real release candidate
 - [ ] Freeze and document public APIs in a release candidate
