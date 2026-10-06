@@ -17,3 +17,8 @@ remain deployment-owned and are not configured by this file.
 `stumpfworks-logs.json` is the matching Loki dashboard. Choose the provisioned
 Loki datasource and one or more bounded container labels. It deliberately does
 not extract arbitrary JSON fields into labels.
+
+`stumpfworks-identity.json` is the focused Identity dashboard. It is pinned to
+the `stumpfworks-identity` scrape job and presents availability, bounded HTTP
+status rates, server-error ratio and latency without exposing identities or
+authentication material.

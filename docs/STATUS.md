@@ -181,5 +181,8 @@ application-specific refresh alerts remains separate work.
   a systemd credential, verified Homelab TLS and dedicated availability,
   error-rate and latency alerts. Unauthorized access returns HTTP 401 and all
   six current scrape targets were healthy after activation.
+- A focused Identity Grafana dashboard was provisioned and verified through the
+  Grafana API. It presents availability, bounded status rates, server-error
+  ratio and latency without identity or authentication labels.
 - The remaining retention, backup and access policy work is still open; this is
   not a claim of full observability or production readiness.

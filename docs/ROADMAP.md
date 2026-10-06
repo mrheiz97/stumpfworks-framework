@@ -90,6 +90,7 @@ Those changes require a separate Identity deployment gate and rollback record.
   - [x] Access exposes opt-in bearer-protected framework HTTP metrics
   - [x] Identity exposes the same bearer-protected framework HTTP metrics and is
     scraped over verified TLS with dedicated health, error-rate and latency rules
+  - [x] Provision and validate a privacy-bounded Identity Grafana dashboard
   - [x] Access has an importable Grafana dashboard and Prometheus starter alerts
   - [x] Centralize structured logs through Alloy/journald and Loki
     - [x] Collect Docker-host journald logs into a local 14-day Loki store
