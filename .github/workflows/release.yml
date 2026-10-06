@@ -56,7 +56,7 @@ jobs:
             --prefix="stumpfworks-framework-$VERSION/" \
             --output="dist/stumpfworks-framework-$VERSION.tar.gz" HEAD
           go run github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@v1.10.0 \
-            mod -json -type library -noserial -notimestamp \
+            mod -json -output-version 1.5 -type library -noserial -notimestamp \
             -output "dist/stumpfworks-framework-$VERSION.sbom.cdx.json" .
           cd dist
           sha256sum *.tar.gz *.sbom.cdx.json > SHA256SUMS
