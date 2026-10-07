@@ -5,6 +5,27 @@ follows Semantic Versioning; APIs may change during `0.x` development.
 
 ## [Unreleased]
 
+## [0.9.0-rc.2] - 2026-10-07
+
+### Fixed
+
+- Accept a unique local LDAP search result when Samba AD also returns referral
+  responses, while continuing to reject referral-only and ambiguous results
+  and never following referrals.
+
+### Verified
+
+- Identity and Access consume and run `v0.9.0-rc.2` in production with tested
+  rollback paths.
+- A real OIDC login exercised Identity's framework LDAP lookup successfully;
+  an unlinked Identity subject was denied by Access.
+- During a controlled Identity outage, Access stayed ready, local login
+  remained available, new OIDC login failed closed, and recovery succeeded.
+- Access delivered dedicated OIDC outage and recovery notifications to the
+  protected operator-owned ntfy topic.
+- Release checksums, CycloneDX SBOM, keyless provenance and SBOM attestations
+  were published and independently verified.
+
 ## [0.9.0-rc.1] - 2026-10-06
 
 ### Added

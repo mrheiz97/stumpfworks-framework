@@ -61,7 +61,8 @@ The staged reader now emits bounded, privacy-safe outcomes and durations, and
 the framework registry exports corresponding Prometheus counter/histogram data.
 An importable Grafana starter dashboard now shows target availability, HTTP
 rate/p95 latency, and directory rate/p95 latency by bounded outcome and stage.
-Its JSON and privacy-label contract are tested; live Grafana import remains open.
+Its JSON and privacy-label contract are tested, and the live Access, Identity
+and logs dashboards are provisioned and API-validated in Grafana.
 PostgreSQL pool snapshots now expose only bounded connection state and aggregate
 acquire counters/duration. Dashboard panels and starter alerts cover pool usage,
 waiting and cancellations. A real disposable PostgreSQL 17 pool exposition test
@@ -101,7 +102,8 @@ consumer is deployed and that a real browser login with an explicitly linked
 Identity account succeeded. Its PostgreSQL integration tests cover successful
 and negative flows; its deployment record describes a restricted backup and
 rollback procedure. These are Access-project results, not tests independently
-rerun by this framework repository. Live issuer-outage acceptance remains open.
+rerun by this framework repository. A controlled live issuer-outage acceptance
+was completed on 2026-10-07.
 Do not put deployment hostnames, IP addresses, or secrets in this public status
 document.
 
@@ -111,14 +113,15 @@ against a disposable PostgreSQL database. In a controlled live Identity rotation
 the operator confirmed a fresh Access browser login after the new key became the
 only advertised key. The OIDC contract test, Identity and Access service checks,
 and Identity token-issuance audit passed. The consumer's refresh loop runs every
-ten minutes and logs each result. A dedicated alert and live issuer-outage
-acceptance remain open; the isolated outage test is not a live outage test. The
-production provider was not deliberately shut down.
+ten minutes and logs each result. During a controlled Identity outage, Access
+remained ready, local login and logout worked, and new OIDC login failed closed.
+After Identity restarted, OIDC initialization recovered successfully.
 
-Access has prepared an optional ntfy notifier for refresh failure, stale-key
-escalation, and recovery, with local TLS tests. Central Alertmanager delivery to
-the operator-owned ntfy topic has since been deployed and verified; wiring the
-application-specific refresh alerts remains separate work.
+Access now uses its optional ntfy notifier for refresh failure, stale-key
+escalation, and recovery. Its dedicated token and the operator-owned protected
+topic were deployed without committing or exposing the credential. Direct test
+delivery and automatic outage/recovery publications were verified. Central
+Alertmanager delivery to the same operator-owned destination also remains active.
 
 ## Before tagging alpha.1
 
@@ -138,8 +141,9 @@ application-specific refresh alerts remains separate work.
   commit belongs to `main`.
 - The workflow produces a source archive, CycloneDX SBOM and SHA-256 checksums,
   then creates keyless provenance and SBOM attestations before publishing.
-- The pipeline remains unaccepted until a real release-candidate tag completes
-  successfully and its downloaded artifacts are independently verified.
+- The `v0.9.0-rc.2` release completed the pipeline successfully. Downloaded
+  checksums, the CycloneDX SBOM, keyless provenance and SBOM attestations were
+  independently verified; GitHub marks the release as a prerelease.
 
 ## Authorization and audit acceptance, 2026-10-03
 
@@ -212,6 +216,7 @@ application-specific refresh alerts remains separate work.
   Existing password authentication, user listing, writes and SQLite persistence
   remain unchanged. Health, OIDC Discovery and runtime selection passed with an
   automatic rollback rehearsal.
-- A fresh Access browser login is still required to exercise the live framework
-  lookup through token issuance. Until then, activation is verified but final
-  consumer acceptance remains open.
+- On 2026-10-07, a fresh Access browser login exercised the live framework
+  lookup and token issuance successfully. The directory success metric confirmed
+  the adapter path. Both applications ran `v0.9.0-rc.2` with prepared rollback,
+  and an unlinked Identity subject was denied by Access as designed.

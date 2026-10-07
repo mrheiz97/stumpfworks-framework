@@ -1,9 +1,8 @@
 # Auth and OIDC Client Threat Model
 
-- Status: OIDC client primitives implemented; consumer wiring and live contract
-  test still pending
-- Date: 2026-09-13
-- Scope: future SWF OIDC client, ID-token verification, callback/session handoff,
+- Status: OIDC client and consumer wiring production-accepted on `v0.9.0-rc.2`
+- Date: 2026-10-07
+- Scope: SWF OIDC client, ID-token verification, callback/session handoff,
   and the boundary between Identity and an application such as Access
 
 ## Boundary and assets
@@ -65,13 +64,12 @@ migrated merely to consume the OIDC client.
 
 ## Current evidence and limits
 
-Identity's `development` branch already contains an OIDC provider and tests for
-PKCE, redirect validation, disabled users, key overlap, and stable subjects.
-This model does not assert a fresh production end-to-end result, nor does it
-declare the provider standards-complete. The first consumer must run contract
-tests against the actual Identity provider and separately verify local linking,
-authorization, and fallback behaviour. No production configuration is changed
-by this document.
+Identity contains an OIDC provider and tests for PKCE, redirect validation,
+disabled users, key overlap, and stable subjects. Access passed a fresh
+production end-to-end login, explicit unlinked-subject denial, controlled
+Identity outage with local fallback, recovery, and signing-key rotation. These
+results validate the modeled consumer boundary; they do not declare the provider
+standards-complete or transfer application authorization into Identity.
 
 ## References
 

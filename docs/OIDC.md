@@ -96,6 +96,7 @@ raw callback URLs. The verifier requires an ID-token lifetime of at most ten
 minutes and accepts at most one minute of future clock skew for `iat`/`nbf`.
 
 Identity's current provider issues RS256 ID tokens with a five-minute lifetime
-and a nonce, so its output is compatible by design. A live consumer contract
-test and application-owned session integration are still required before
-production use. Identity remains on Go 1.24 and is not changed by this module.
+and a nonce, so its output is compatible by design. Access has passed the live
+consumer contract, application-owned session, explicit account-link denial,
+key-rotation and controlled provider-outage tests. Identity and Access both use
+Go 1.26.8 and consume `v0.9.0-rc.2`.

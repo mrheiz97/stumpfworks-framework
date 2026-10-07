@@ -2,8 +2,8 @@
 
 Status: read-only framework directory lookup deployed on 2026-10-06; Identity's
 password authentication, listing, writes and SQLite store remain unchanged. Do
-not couple directory and database cutovers. A fresh real Access OIDC login is
-still required for final consumer acceptance.
+not couple directory and database cutovers. A fresh real Access OIDC login using
+the active adapter completed final consumer acceptance on 2026-10-07.
 
 ## Framework boundary
 
@@ -158,9 +158,10 @@ verification passed, and `samba-tool dbcheck --cross-ncs` reported zero errors.
 Identity then enabled the default-off framework read adapter through a systemd
 drop-in while retaining its existing password authentication and listing code.
 Identity health, OIDC Discovery, the verified LDAPS handshake and the active
-runtime selection passed. Both hosts retain root-only rollback directories. A
-fresh browser login through Access is still needed to exercise a real lookup and
-token issuance before calling the live consumer acceptance complete.
+runtime selection passed. Both hosts retain root-only rollback directories. On
+2026-10-07, a fresh browser login through Access exercised a successful live
+framework lookup and token issuance. The directory lookup success counter also
+confirmed the framework path was used.
 
 Directory lookup observations now use fixed outcome/stage sets and duration only.
 The framework metrics registry exports `swf_directory_lookups_total` and
