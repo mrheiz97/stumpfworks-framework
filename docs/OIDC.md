@@ -99,4 +99,4 @@ Identity's current provider issues RS256 ID tokens with a five-minute lifetime
 and a nonce, so its output is compatible by design. Access has passed the live
 consumer contract, application-owned session, explicit account-link denial,
 key-rotation and controlled provider-outage tests. Identity and Access both use
-Go 1.26.8 and consume `v0.9.0-rc.2`.
+Go 1.26.8 and consume `v1.0.0`.

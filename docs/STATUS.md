@@ -236,3 +236,8 @@ Alertmanager delivery to the same operator-owned destination also remains active
   mutation-audit migration.
 - The accepted public surface is released as `v1.0.0`; later 1.x changes follow
   the compatibility policy in `API-STABILITY.md`.
+- Identity and Access were then pinned to `v1.0.0`, passed their full Go test and
+  vet suites, and were deployed with new root-only binary/configuration
+  rollbacks. Both services restarted cleanly; Access readiness, Identity health,
+  Discovery and the Access-to-Identity OIDC authorization redirect returned
+  successfully over verified TLS.
