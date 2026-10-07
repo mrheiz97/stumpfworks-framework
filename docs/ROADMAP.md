@@ -43,14 +43,14 @@ real consumers validate the design.
 - [x] Optional managed metadata refresh loop and freshness status in the framework
 - [x] Access refresh-loop wiring and result logging
 - [x] Access isolated issuer-outage/recovery tests and live Identity key-rotation acceptance
-- [ ] Deploy and verify Access ntfy alert delivery (notifier prepared locally)
-- [ ] Live issuer-outage acceptance (no planned production shutdown)
+- [x] Deploy and verify Access ntfy alert delivery
+- [x] Controlled live issuer-outage and recovery acceptance with local fallback
 
 ## Next integration — Identity directory and PostgreSQL
 
 Identity directory and PostgreSQL migration preparation is tracked in
 `IDENTITY-INTEGRATION.md`. The read-only LDAPS lookup bridge is active against
-Samba AD; one fresh real consumer login remains its final acceptance check.
+Samba AD; a fresh real consumer login has completed its acceptance check.
 
 ## 0.4 — Identity backend and authorization contracts
 
@@ -70,7 +70,7 @@ stable framework surface.
   through the real Identity startup path
 - [x] Replace the Samba AD certificate with a trusted certificate containing
   the required DNS SAN and activate the read-only LDAPS adapter with rollback
-- [ ] Confirm the active read-only adapter through a fresh real Access OIDC login
+- [x] Confirm the active read-only adapter through a fresh real Access OIDC login
 - [x] Derive the first RBAC/permission contract from real Identity and Access
   requirements; keep application-specific roles outside the framework
 
@@ -105,11 +105,12 @@ Those changes require a separate Identity deployment gate and rollback record.
     target outages, notification failures, Loki server errors and dropped logs
   - [x] Document retention and access boundaries and validate a complete
     configuration/volume backup through an isolated restore test
-- [ ] Validate the prepared SBOM and keyless signed provenance pipeline with a
+- [x] Validate the prepared SBOM and keyless signed provenance pipeline with a
   real release candidate
-- [ ] Freeze and document public APIs in a release candidate
+- [x] Freeze and document public APIs in a release candidate
 - [ ] Test upgrades, migrations, backups and rollback for both consumers
-- [ ] Confirm Identity and Access are production-capable on the release candidate
+- [x] Confirm the Framework-backed Identity and Access integration is
+  production-capable on the release candidate
 
 ## Future candidate — optional AI integration
 
@@ -147,10 +148,11 @@ the metrics registry exports them as Prometheus counters and histograms without
 usernames, DNs, arbitrary errors, or other high-cardinality labels.
 Access and Identity now expose the framework HTTP registry through opt-in,
 bearer-protected endpoints and are scraped over verified TLS with focused
-Prometheus alerts. Access also ships a focused Grafana dashboard. Still open:
-consistent log fields and per-component levels, additional health/DB/auth
-metrics, a collector/deployment example, retention and access rules, and
-validated live dashboard provisioning. Start with a low-maintenance single-node setup; document a path to
+Prometheus alerts. The Access, Identity and logs dashboards are provisioned in
+the live Grafana installation; Alertmanager and the Access OIDC refresh notifier
+both deliver to protected ntfy. Still open are incremental log-field and
+component-level refinements plus additional consumer-driven health/DB/auth
+metrics. Start with a low-maintenance single-node setup; document a path to
 multiple services and sites, role-based dashboard access, backups, configurable
 retention, and alerting for SMB use without making those requirements mandatory
 for Homelabs. Keep tokens, passwords, PINs, raw OIDC URLs, and other secrets out

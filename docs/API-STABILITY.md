@@ -1,8 +1,9 @@
 # Public API stability for the 0.9 release candidate
 
-This document freezes the intended public surface for `v0.9.0-rc.1`. The RC is
+This document freezes the intended public surface for `v0.9.0-rc.2`. The RC is
 the compatibility trial before `v1.0.0`; it is not yet the final stable release.
-Identity and Access must complete their remaining acceptance gates before 1.0.
+The Framework-backed Identity and Access paths passed production acceptance;
+application-specific release gates remain outside this API freeze.
 
 ## Supported library packages
 

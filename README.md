@@ -4,9 +4,9 @@ StumpfWorks Framework (SWF) is the shared, self-hostable foundation for
 independent StumpfWorks applications. It targets Homelabs and small businesses
 without requiring a StumpfWorks cloud service.
 
-The project is preparing its `0.9` release candidate. Its candidate public API
-is frozen for final Identity and Access acceptance, but it is not yet a stable
-`1.0` platform release.
+The current candidate is `v0.9.0-rc.2`. Its public API is frozen, and the
+framework-backed Identity and Access paths have passed controlled production
+acceptance. It is not yet a stable `1.0` platform release.
 
 The current Go module path is `github.com/mrheiz97/stumpfworks-framework`.
 It matches the current repository owner. The repository is public, so downstream

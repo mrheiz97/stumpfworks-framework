@@ -1,11 +1,10 @@
 # Access OIDC consumer integration plan
 
-Status: Access reports the framework-backed consumer deployed and a successful
-real browser login on 2026-09-14. A controlled live Identity signing-key rotation
-and isolated issuer-outage/recovery tests also passed. This document retains the
-original design and acceptance checklist; see `STATUS.md` for the current summary.
-Live issuer-outage acceptance and a dedicated refresh alert remain open. Access
-runs the framework refresh loop and logs each result.
+Status: Access runs the `v0.9.0-rc.2` framework-backed consumer in production.
+Real browser login, signing-key rotation, an unlinked-subject denial, controlled
+live issuer outage/recovery, local fallback and dedicated ntfy outage/recovery
+notifications have passed. This document retains the original design and
+acceptance checklist; see `STATUS.md` for the current summary.
 
 ## Existing consumer boundary
 
