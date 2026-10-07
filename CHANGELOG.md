@@ -5,6 +5,21 @@ follows Semantic Versioning; APIs may change during `0.x` development.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-07
+
+### Stable
+
+- Freeze the production-accepted Core, HTTP, PostgreSQL, audit, OIDC,
+  authorization, read-only LDAP and observability APIs for the compatible 1.x
+  line.
+- Complete consumer upgrade, migration, backup and rollback acceptance with
+  Identity and Access. The Access PostgreSQL dump is readable; Identity's live
+  SQLite database and latest independent backup pass integrity checks; both
+  applications retain distinct previous binaries and configuration rollbacks.
+- Keep application-specific physical hardware, Identity database cutover,
+  legacy mutation audit migration and future AI/provider APIs outside the
+  Framework 1.0 contract.
+
 ## [0.9.0-rc.2] - 2026-10-07
 
 ### Fixed

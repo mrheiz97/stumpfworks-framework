@@ -108,7 +108,7 @@ Those changes require a separate Identity deployment gate and rollback record.
 - [x] Validate the prepared SBOM and keyless signed provenance pipeline with a
   real release candidate
 - [x] Freeze and document public APIs in a release candidate
-- [ ] Test upgrades, migrations, backups and rollback for both consumers
+- [x] Test upgrades, migrations, backups and rollback for both consumers
 - [x] Confirm the Framework-backed Identity and Access integration is
   production-capable on the release candidate
 

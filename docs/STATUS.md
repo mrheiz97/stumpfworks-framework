@@ -220,3 +220,19 @@ Alertmanager delivery to the same operator-owned destination also remains active
   lookup and token issuance successfully. The directory success metric confirmed
   the adapter path. Both applications ran `v0.9.0-rc.2` with prepared rollback,
   and an unlinked Identity subject was denied by Access as designed.
+
+## Stable 1.0 acceptance, 2026-10-07
+
+- Framework, Access and Identity full Go tests and vet passed with clean diffs.
+- Access remained active with no failed systemd units. Its rollback contains a
+  distinct previous binary, unit and protected configuration; the PostgreSQL
+  custom-format dump is readable by `pg_restore`.
+- Identity remained active with no failed systemd units. Its rollback contains
+  a distinct previous binary, configuration and SQLite snapshot. Both the live
+  SQLite database and the latest separate daily backup pass integrity checks.
+- These results close the Framework consumer upgrade, migration, backup and
+  rollback gate. They do not replace Access's separate electrical measurement
+  and physical crash testing or Identity's future PostgreSQL cutover and legacy
+  mutation-audit migration.
+- The accepted public surface is released as `v1.0.0`; later 1.x changes follow
+  the compatibility policy in `API-STABILITY.md`.
