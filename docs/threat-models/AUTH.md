@@ -1,6 +1,6 @@
 # Auth and OIDC Client Threat Model
 
-- Status: OIDC client and consumer wiring production-accepted on `v0.9.0-rc.2`
+- Status: OIDC client and consumer wiring production-accepted on `v1.0.0`
 - Date: 2026-10-07
 - Scope: SWF OIDC client, ID-token verification, callback/session handoff,
   and the boundary between Identity and an application such as Access

@@ -1,6 +1,6 @@
 # Access OIDC consumer integration plan
 
-Status: Access runs the `v0.9.0-rc.2` framework-backed consumer in production.
+Status: Access runs the `v1.0.0` framework-backed consumer in production.
 Real browser login, signing-key rotation, an unlinked-subject denial, controlled
 live issuer outage/recovery, local fallback and dedicated ntfy outage/recovery
 notifications have passed. This document retains the original design and
