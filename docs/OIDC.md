@@ -31,6 +31,23 @@ if err != nil { /* reject login without exposing token contents */ }
 // account-link table, then create a new application-owned session.
 ```
 
+Consumers that need centrally revocable application sessions can instead call
+`transaction.CompleteWithToken`. It performs the identical one-use login and
+ID-token validation but also requires a bounded opaque Bearer access token.
+Treat `LoginResult.AccessToken` as a server-side secret: never return or log it,
+encrypt it before database storage, and remove it with the local session.
+
+If Discovery advertises `introspection_endpoint`, `Discover` accepts it only as
+an exact HTTPS endpoint on the pinned issuer origin. `NewTokenIntrospector`
+builds an authenticated RFC 7662 client from that vetted configuration.
+`Introspect` refuses redirects, bounds request and response data, binds active
+responses to the configured client, validates their lifetime, and exposes only
+active state, subject, session ID, scope and timestamps. Inactive tokens are not
+errors. Network, authentication and malformed-response failures return the
+generic `ErrIntrospectionFailed`; the consuming application must choose and
+document whether its local session fails closed or uses a short, bounded last-
+known-good interval. Local/recovery login must remain independent.
+
 `Discover` uses a five-second total deadline, bounds both JSON responses, and
 rejects redirects or cross-origin metadata endpoints. The default HTTP client
 verifies TLS. If a custom client is supplied for a private CA, its transport

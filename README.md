@@ -17,7 +17,8 @@ builds do not need `GOPRIVATE` for this module.
 - application lifecycle, typed configuration and structured redacted logging;
 - safe HTTP defaults, health checks, Problem Details and strict JSON decoding;
 - PostgreSQL pooling, transactions, migrations and an append-only audit store;
-- pinned-issuer OIDC Discovery, JWKS refresh, PKCE login and ID-token validation;
+- pinned-issuer OIDC Discovery, JWKS refresh, PKCE login, ID-token validation
+  and authenticated opaque-token introspection;
 - encrypted, browser-bound OIDC transaction persistence for consumer storage;
 - bounded, policy-neutral exact-match permission sets;
 - bounded read-only LDAPS user lookup with privacy-safe observations;

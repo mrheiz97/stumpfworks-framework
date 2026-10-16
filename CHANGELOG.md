@@ -5,6 +5,12 @@ follows Semantic Versioning; APIs may change during `0.x` development.
 
 ## [Unreleased]
 
+### Added
+
+- Additive OIDC login results can retain a bounded opaque access token for
+  server-side use, and a confidential RFC 7662 client introspects it only at a
+  same-origin endpoint vetted through pinned-issuer Discovery.
+
 ## [1.0.0] - 2026-10-07
 
 ### Stable
