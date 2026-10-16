@@ -1,6 +1,6 @@
 module github.com/mrheiz97/stumpfworks-framework
 
-go 1.26.8
+go 1.26.9
 
 require (
 	github.com/go-asn1-ber/asn1-ber v1.5.8

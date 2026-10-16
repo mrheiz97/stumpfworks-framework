@@ -115,5 +115,7 @@ minutes and accepts at most one minute of future clock skew for `iat`/`nbf`.
 Identity's current provider issues RS256 ID tokens with a five-minute lifetime
 and a nonce, so its output is compatible by design. Access has passed the live
 consumer contract, application-owned session, explicit account-link denial,
-key-rotation and controlled provider-outage tests. Identity and Access both use
-Go 1.26.8 and consume `v1.0.0`.
+key-rotation and controlled provider-outage tests. Framework development now
+requires Go 1.26.9 or newer because 1.26.8 contains known standard-library
+vulnerabilities. The deployed applications still consume `v1.0.0`; adopting
+this additive API remains a separate tested rollout.

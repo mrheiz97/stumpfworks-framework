@@ -56,7 +56,7 @@ owned by the consumer; they must not be hidden behind a global singleton.
 
 The Go module path follows the repository (ADR 0009). Before
 importing SWF into Identity or Access, confirm the supported Go baseline.
-The staged Identity integration and SWF now require Go 1.26.8; compatibility
+The staged Identity integration and SWF now require Go 1.26.9; compatibility
 and patch-security reasons are recorded in Identity's migration preparation and
 ADR 0007. Production upgrades remain separate from local preparation. Identity
 currently persists to SQLite and Access to PostgreSQL. Neither database is

@@ -131,9 +131,9 @@ local TLS (Discovery/JWKS, browser binding, PKCE, signature/claims and replay).
 pg_dump/restore preserves full synthetic contents of all seven tables.
 Application-wide audit policy and runtime wiring remain open. No runtime switch,
 production migration or full native badge/PKINIT acceptance has occurred.
-Go 1.26.8 is enforced after checking a build/scanner mismatch; scans with that
-toolchain report no reachable/imported-package findings, with one unused OpenPGP
-module advisory remaining. Full unit tests and vet pass locally.
+Go 1.26.9 is enforced after checking build/scanner mismatches and the standard-
+library vulnerabilities published for 1.26.8. Full unit tests, vet and the
+vulnerability gate must use that same patched toolchain.
 
 On 2026-09-18 framework PR #32 passed fresh GitHub CI, including Linux race and
 PostgreSQL checks. Identity pinned that framework revision and added an inactive

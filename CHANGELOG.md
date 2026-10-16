@@ -11,6 +11,11 @@ follows Semantic Versioning; APIs may change during `0.x` development.
   server-side use, and a confidential RFC 7662 client introspects it only at a
   same-origin endpoint vetted through pinned-issuer Discovery.
 
+### Security
+
+- Raise the minimum Go toolchain to 1.26.9 after the vulnerability gate found
+  standard-library issues in 1.26.8, including GO-2026-6617.
+
 ## [1.0.0] - 2026-10-07
 
 ### Stable
