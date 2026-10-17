@@ -5,6 +5,8 @@ follows Semantic Versioning; APIs may change during `0.x` development.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-17
+
 ### Added
 
 - Additive OIDC login results can retain a bounded opaque access token for
