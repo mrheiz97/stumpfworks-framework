@@ -47,7 +47,7 @@ func TestConfidentialCodeFlow(t *testing.T) {
 			}
 			now := time.Now()
 			claims := map[string]any{"iss": server.URL, "sub": "opaque-subject", "aud": testClient, "iat": now.Unix(), "exp": now.Add(5 * time.Minute).Unix(), "nonce": expectedNonce.Load().(string)}
-			_ = json.NewEncoder(w).Encode(map[string]string{"id_token": signToken(t, key, "current", claims)})
+			_ = json.NewEncoder(w).Encode(map[string]any{"id_token": signToken(t, key, "current", claims), "access_token": "opaque-access-token", "token_type": "Bearer", "expires_in": 300})
 		default:
 			http.NotFound(w, r)
 		}
@@ -99,9 +99,9 @@ func TestConfidentialCodeFlow(t *testing.T) {
 	if _, _, err := client.Begin(); !errors.Is(err, ErrStaleConfiguration) {
 		t.Fatal("stale snapshot began a new login")
 	}
-	identity, err := transaction.Complete(t.Context(), callback)
-	if err != nil || identity != (Identity{Issuer: server.URL, Subject: "opaque-subject"}) {
-		t.Fatalf("unexpected identity: %+v, %v", identity, err)
+	result, err := transaction.CompleteWithToken(t.Context(), callback)
+	if err != nil || result.Identity != (Identity{Issuer: server.URL, Subject: "opaque-subject"}) || result.AccessToken != "opaque-access-token" || result.ExpiresIn != 5*time.Minute {
+		t.Fatalf("unexpected login result: %+v, %v", result, err)
 	}
 	if tokenCalls.Load() != 1 {
 		t.Fatalf("token calls: %d", tokenCalls.Load())

@@ -21,6 +21,7 @@ const (
 type Configuration struct {
 	AuthorizationEndpoint string
 	TokenEndpoint         string
+	IntrospectionEndpoint string
 	Verifier              *Verifier
 	validUntil            time.Time
 }
@@ -29,6 +30,7 @@ type metadata struct {
 	Issuer                           string   `json:"issuer"`
 	AuthorizationEndpoint            string   `json:"authorization_endpoint"`
 	TokenEndpoint                    string   `json:"token_endpoint"`
+	IntrospectionEndpoint            string   `json:"introspection_endpoint"`
 	JWKSURI                          string   `json:"jwks_uri"`
 	ResponseTypesSupported           []string `json:"response_types_supported"`
 	CodeChallengeMethodsSupported    []string `json:"code_challenge_methods_supported"`
@@ -57,6 +59,7 @@ func Discover(ctx context.Context, issuer, clientID string, client *http.Client)
 	}
 	if meta.Issuer != issuer || !sameOriginEndpoint(issuer, meta.AuthorizationEndpoint) ||
 		!sameOriginEndpoint(issuer, meta.TokenEndpoint) || !sameOriginEndpoint(issuer, meta.JWKSURI) ||
+		(meta.IntrospectionEndpoint != "" && !sameOriginEndpoint(issuer, meta.IntrospectionEndpoint)) ||
 		!slices.Contains(meta.ResponseTypesSupported, "code") ||
 		!slices.Contains(meta.CodeChallengeMethodsSupported, "S256") ||
 		!slices.Contains(meta.IDTokenSigningAlgValuesSupported, "RS256") {
@@ -70,7 +73,7 @@ func Discover(ctx context.Context, issuer, clientID string, client *http.Client)
 	if err != nil {
 		return nil, errors.New("OIDC JWKS is invalid")
 	}
-	return &Configuration{AuthorizationEndpoint: meta.AuthorizationEndpoint, TokenEndpoint: meta.TokenEndpoint, Verifier: verifier, validUntil: time.Now().Add(time.Hour)}, nil
+	return &Configuration{AuthorizationEndpoint: meta.AuthorizationEndpoint, TokenEndpoint: meta.TokenEndpoint, IntrospectionEndpoint: meta.IntrospectionEndpoint, Verifier: verifier, validUntil: time.Now().Add(time.Hour)}, nil
 }
 
 func sameOriginEndpoint(issuer, endpoint string) bool {

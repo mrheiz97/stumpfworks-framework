@@ -20,7 +20,7 @@ func TestDiscoverIdentityCompatibleProvider(t *testing.T) {
 		case "/.well-known/openid-configuration":
 			_ = json.NewEncoder(w).Encode(map[string]any{
 				"issuer": server.URL, "authorization_endpoint": server.URL + "/oauth2/authorize",
-				"token_endpoint": server.URL + "/oauth2/token", "jwks_uri": server.URL + "/oauth2/jwks",
+				"token_endpoint": server.URL + "/oauth2/token", "introspection_endpoint": server.URL + "/oauth2/introspect", "jwks_uri": server.URL + "/oauth2/jwks",
 				"response_types_supported": []string{"code"}, "code_challenge_methods_supported": []string{"S256"},
 				"id_token_signing_alg_values_supported": []string{"RS256"},
 			})
@@ -35,7 +35,7 @@ func TestDiscoverIdentityCompatibleProvider(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if configuration.AuthorizationEndpoint != server.URL+"/oauth2/authorize" || configuration.TokenEndpoint != server.URL+"/oauth2/token" {
+	if configuration.AuthorizationEndpoint != server.URL+"/oauth2/authorize" || configuration.TokenEndpoint != server.URL+"/oauth2/token" || configuration.IntrospectionEndpoint != server.URL+"/oauth2/introspect" {
 		t.Fatalf("bad endpoints: %+v", configuration)
 	}
 	now := time.Now()
@@ -82,6 +82,8 @@ func TestDiscoverRejectsUntrustedMetadataAndRedirects(t *testing.T) {
 			meta["jwks_uri"] = "https://evil.example.test/jwks"
 		case "http token":
 			meta["token_endpoint"] = "http://identity.example.test/token"
+		case "foreign introspection":
+			meta["introspection_endpoint"] = "https://evil.example.test/introspect"
 		case "empty-query token":
 			meta["token_endpoint"] = server.URL + "/oauth2/token?"
 		case "missing PKCE":
@@ -92,7 +94,7 @@ func TestDiscoverRejectsUntrustedMetadataAndRedirects(t *testing.T) {
 		_ = json.NewEncoder(w).Encode(meta)
 	}))
 	defer server.Close()
-	for _, testMode := range []string{"wrong issuer", "foreign JWKS", "http token", "empty-query token", "missing PKCE", "wrong algorithm", "redirect", "oversized metadata", "oversized jwks"} {
+	for _, testMode := range []string{"wrong issuer", "foreign JWKS", "http token", "foreign introspection", "empty-query token", "missing PKCE", "wrong algorithm", "redirect", "oversized metadata", "oversized jwks"} {
 		t.Run(testMode, func(t *testing.T) {
 			mode.Store(testMode)
 			if _, err := Discover(t.Context(), server.URL, testClient, server.Client()); err == nil {

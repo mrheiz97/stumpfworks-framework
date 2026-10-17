@@ -70,6 +70,15 @@ type Transaction struct {
 	used      atomic.Bool
 }
 
+// LoginResult contains the verified identity and the provider's opaque access
+// token. AccessToken is a bearer secret: keep it server-side, encrypt it at
+// rest, never log it, and discard it when continuous revocation is not needed.
+type LoginResult struct {
+	Identity    Identity
+	AccessToken string
+	ExpiresIn   time.Duration
+}
+
 // State returns the opaque callback lookup key, not the PKCE verifier.
 func (transaction *Transaction) State() string {
 	if transaction == nil {
@@ -86,6 +95,16 @@ func (transaction *Transaction) Complete(ctx context.Context, callback url.Value
 		return Identity{}, ErrLoginFailed
 	}
 	return transaction.owner.Complete(ctx, transaction, callback)
+}
+
+// CompleteWithToken finishes this transaction and additionally returns the
+// opaque access token for server-side introspection. It applies the same
+// one-use, PKCE, nonce, issuer and signature checks as Complete.
+func (transaction *Transaction) CompleteWithToken(ctx context.Context, callback url.Values) (LoginResult, error) {
+	if transaction == nil || transaction.owner == nil {
+		return LoginResult{}, ErrLoginFailed
+	}
+	return transaction.owner.CompleteWithToken(ctx, transaction, callback)
 }
 
 // Begin creates a fresh one-use browser transaction and its authorization URL.
@@ -137,14 +156,25 @@ func randomURLString() (string, error) {
 // the transaction. The caller must separately enforce browser binding and
 // explicitly link the resulting identity to a local account.
 func (client *LoginClient) Complete(ctx context.Context, transaction *Transaction, callback url.Values) (Identity, error) {
+	result, err := client.complete(ctx, transaction, callback, false)
+	return result.Identity, err
+}
+
+// CompleteWithToken consumes a transaction and requires a bounded opaque
+// bearer access token in addition to a valid ID token.
+func (client *LoginClient) CompleteWithToken(ctx context.Context, transaction *Transaction, callback url.Values) (LoginResult, error) {
+	return client.complete(ctx, transaction, callback, true)
+}
+
+func (client *LoginClient) complete(ctx context.Context, transaction *Transaction, callback url.Values, requireAccessToken bool) (LoginResult, error) {
 	if client == nil || ctx == nil || transaction == nil || transaction.owner != client || transaction.used.Swap(true) ||
 		client.now().Sub(transaction.createdAt) > transactionLifetime || transaction.createdAt.After(client.now().Add(clockSkew)) {
-		return Identity{}, ErrLoginFailed
+		return LoginResult{}, ErrLoginFailed
 	}
 	if len(callback["state"]) != 1 || len(callback["code"]) != 1 || len(callback["error"]) != 0 ||
 		callback.Get("code") == "" || len(callback.Get("code")) > maxCodeBytes ||
 		subtle.ConstantTimeCompare([]byte(callback.Get("state")), []byte(transaction.state)) != 1 {
-		return Identity{}, ErrLoginFailed
+		return LoginResult{}, ErrLoginFailed
 	}
 	ctx, cancel := context.WithTimeout(ctx, discoveryTimeout)
 	defer cancel()
@@ -156,32 +186,38 @@ func (client *LoginClient) Complete(ctx context.Context, transaction *Transactio
 	}
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost, client.configuration.TokenEndpoint, strings.NewReader(form.Encode()))
 	if err != nil {
-		return Identity{}, ErrLoginFailed
+		return LoginResult{}, ErrLoginFailed
 	}
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Set("Accept", "application/json")
 	request.SetBasicAuth(client.clientID, client.secret)
 	response, err := client.httpClient.Do(request)
 	if err != nil {
-		return Identity{}, ErrLoginFailed
+		return LoginResult{}, ErrLoginFailed
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
-		return Identity{}, ErrLoginFailed
+		return LoginResult{}, ErrLoginFailed
 	}
 	contents, err := io.ReadAll(io.LimitReader(response.Body, maxTokenResponseBytes+1))
 	if err != nil || len(contents) > maxTokenResponseBytes {
-		return Identity{}, ErrLoginFailed
+		return LoginResult{}, ErrLoginFailed
 	}
 	var token struct {
-		IDToken string `json:"id_token"`
+		IDToken     string `json:"id_token"`
+		AccessToken string `json:"access_token"`
+		TokenType   string `json:"token_type"`
+		ExpiresIn   int64  `json:"expires_in"`
 	}
 	if err := json.Unmarshal(contents, &token); err != nil {
-		return Identity{}, ErrLoginFailed
+		return LoginResult{}, ErrLoginFailed
+	}
+	if requireAccessToken && (token.AccessToken == "" || len(token.AccessToken) > maxCodeBytes || !strings.EqualFold(token.TokenType, "Bearer") || token.ExpiresIn <= 0 || token.ExpiresIn > 86400) {
+		return LoginResult{}, ErrLoginFailed
 	}
 	identity, err := client.configuration.Verifier.VerifyIDToken(token.IDToken, transaction.nonce)
 	if err != nil {
-		return Identity{}, ErrLoginFailed
+		return LoginResult{}, ErrLoginFailed
 	}
-	return identity, nil
+	return LoginResult{Identity: identity, AccessToken: token.AccessToken, ExpiresIn: time.Duration(token.ExpiresIn) * time.Second}, nil
 }

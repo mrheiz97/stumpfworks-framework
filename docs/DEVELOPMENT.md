@@ -2,7 +2,7 @@
 
 ## Quality checks
 
-Use Go 1.26.8 or a newer patched release:
+Use Go 1.26.9 or a newer patched release:
 
 ```bash
 gofmt -w .

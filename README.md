@@ -17,7 +17,8 @@ builds do not need `GOPRIVATE` for this module.
 - application lifecycle, typed configuration and structured redacted logging;
 - safe HTTP defaults, health checks, Problem Details and strict JSON decoding;
 - PostgreSQL pooling, transactions, migrations and an append-only audit store;
-- pinned-issuer OIDC Discovery, JWKS refresh, PKCE login and ID-token validation;
+- pinned-issuer OIDC Discovery, JWKS refresh, PKCE login, ID-token validation
+  and authenticated opaque-token introspection;
 - encrypted, browser-bound OIDC transaction persistence for consumer storage;
 - bounded, policy-neutral exact-match permission sets;
 - bounded read-only LDAPS user lookup with privacy-safe observations;
@@ -32,7 +33,7 @@ events/outbox remain deliberately excluded until a consumer needs them.
 
 ## Quick start
 
-Requirements: Go 1.26.8 or a newer patched release. Older toolchains contain known vulnerabilities
+Requirements: Go 1.26.9 or a newer patched release. Older toolchains contain known vulnerabilities
 in standard-library paths used by SWF.
 
 ```bash
