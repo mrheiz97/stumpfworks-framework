@@ -4,7 +4,7 @@ go 1.26.9
 
 require (
 	github.com/go-asn1-ber/asn1-ber v1.5.8
-	github.com/go-jose/go-jose/v4 v4.1.5
+	github.com/go-jose/go-jose/v4 v4.1.6
 	github.com/go-ldap/ldap/v3 v3.4.14
 	github.com/jackc/pgx/v5 v5.11.0
 )
