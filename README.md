@@ -4,7 +4,7 @@ StumpfWorks Framework (SWF) is the shared, self-hostable foundation for
 independent StumpfWorks applications. It targets Homelabs and small businesses
 without requiring a StumpfWorks cloud service.
 
-The stable release is `v1.1.0`. It remains API-compatible with `v1.0.0`, and
+The stable release is `v1.2.0`. It remains API-compatible with `v1.0.0`, and
 the framework-backed Identity and Access paths have passed controlled
 production acceptance.
 
