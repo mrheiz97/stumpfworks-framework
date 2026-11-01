@@ -17,6 +17,7 @@ candidate public API:
 - `data/migrate` and `data/postgres`
 - `directory/ldap`
 - `security`
+- `security/certificates` (additive in v1.2.0; requires Go 1.26.10)
 - `web/health`, `web/metrics`, `web/middleware`, `web/problem` and
   `web/validation`
 
