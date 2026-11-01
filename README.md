@@ -35,7 +35,7 @@ events/outbox remain deliberately excluded until a consumer needs them.
 
 ## Quick start
 
-Requirements: Go 1.26.9 or a newer patched release. Older toolchains contain known vulnerabilities
+Requirements: Go 1.26.10 or a newer patched release. Older toolchains contain known vulnerabilities
 in standard-library paths used by SWF.
 
 ```bash

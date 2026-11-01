@@ -5,6 +5,11 @@ follows Semantic Versioning; APIs may change during `0.x` development.
 
 ## [Unreleased]
 
+### Security
+
+- Require Go 1.26.10 for the X509 verification fix GO-2026-6809. The new issued
+  certificate verifier must not introduce a reachable vulnerable Verify call.
+
 ### Added
 
 - Add opt-in `security/certificates` verified-peer and issued-leaf verification
