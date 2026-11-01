@@ -5,6 +5,8 @@ follows Semantic Versioning; APIs may change during `0.x` development.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-01
+
 ### Security
 
 - Require Go 1.26.10 for the X509 verification fix GO-2026-6809. The new issued
