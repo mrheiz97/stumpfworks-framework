@@ -5,6 +5,14 @@ follows Semantic Versioning; APIs may change during `0.x` development.
 
 ## [Unreleased]
 
+### Added
+
+- Add opt-in `security/certificates` verified-peer and issued-leaf verification
+  using explicit clocks, EKUs, roots, public-key DER and optional root pins.
+  Detached public metadata and bounded errors retain consumer identity policy.
+- Add portable consumer contracts, real mTLS and intermediate-chain tests,
+  certificate API documentation and ADR 0013. No consumer is migrated.
+
 ## [1.1.0] - 2026-10-17
 
 ### Added

@@ -21,6 +21,8 @@ builds do not need `GOPRIVATE` for this module.
   and authenticated opaque-token introspection;
 - encrypted, browser-bound OIDC transaction persistence for consumer storage;
 - bounded, policy-neutral exact-match permission sets;
+- opt-in [peer and issued-certificate verification](docs/certificates.md) with
+  explicit trust, public-key binding, root pinning and no application policy;
 - bounded read-only LDAPS user lookup with privacy-safe observations;
 - Prometheus-compatible HTTP, PostgreSQL and directory metrics;
 - a Grafana starter dashboard and Prometheus starter alert rules.
